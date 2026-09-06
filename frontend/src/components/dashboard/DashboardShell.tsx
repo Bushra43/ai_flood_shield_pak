@@ -65,6 +65,12 @@ export function DashboardShell() {
             <EmptyState message="No FloodShield status data is available." />
           ) : null}
 
+          {data.errorMessage ? (
+            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              {data.errorMessage}
+            </p>
+          ) : null}
+
           {!isLoading && status ? (
             <div className="animate-fade-in space-y-6">
               <FloodAlertHero status={status} />

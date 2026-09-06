@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { fetchDashboardData } from "@/lib/api";
+import { readCachedDashboard } from "@/lib/storage";
 import type { DashboardData } from "@/types/floodshield";
 
 const initialState: DashboardData = {
@@ -13,27 +14,51 @@ const initialState: DashboardData = {
   errorMessage: null,
 };
 
+function getHydratedState(): DashboardData {
+  const cached = readCachedDashboard();
+  if (cached?.status) {
+    return {
+      ...cached,
+      mode: "loading",
+      errorMessage: null,
+    };
+  }
+  return initialState;
+}
+
 export function useFloodShieldData() {
   const [data, setData] = useState<DashboardData>(initialState);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    setData(getHydratedState());
+    setHasHydrated(true);
+  }, []);
 
   const load = useCallback(async (isManual = false) => {
     if (isManual) setIsRefreshing(true);
-    else setData((prev) => ({ ...prev, mode: "loading", errorMessage: null }));
+    else {
+      setData((prev) => ({
+        ...prev,
+        mode: prev.status ? prev.mode : "loading",
+        errorMessage: null,
+      }));
+    }
 
-    const controller = new AbortController();
-    const result = await fetchDashboardData(controller.signal);
+    const result = await fetchDashboardData();
     setData(result);
     setIsRefreshing(false);
   }, []);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     void load(false);
-  }, [load]);
+  }, [hasHydrated, load]);
 
   return {
     data,
-    isLoading: data.mode === "loading",
+    isLoading: data.mode === "loading" && !data.status,
     isRefreshing,
     refresh: () => load(true),
   };

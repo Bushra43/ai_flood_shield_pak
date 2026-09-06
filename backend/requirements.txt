@@ -6,4 +6,6 @@ numpy>=1.26.0
 pandas>=2.0.0
 requests>=2.32.0
 beautifulsoup4>=4.12.0
-scikit-learn>=1.4.0
+# Must match the version used to train ml/models/floodshield_marala_model.pkl
+scikit-learn==1.7.2
+openai>=1.40.0

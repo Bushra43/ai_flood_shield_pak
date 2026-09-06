@@ -18,6 +18,14 @@ Early flood-risk alerting for the **Chenab River at Marala**, combining live FFD
 3. **ML next-day risk** — Extra Trees / Random Forest model trained on 2024–2025 Marala data  
 4. **Final alert** — highest credible risk from the three signals, then phrased in English + Urdu (LLM is used only for wording, not for deciding the level)
 
+## Frontend ↔ backend integration
+
+The dashboard reads from FastAPI when `NEXT_PUBLIC_API_BASE_URL` is set (for example `http://127.0.0.1:8000` locally, or your deployed API URL later). Successful responses are cached in browser `localStorage` so Refresh still works if the API is briefly down.
+
+If the base URL is empty, the app serves built-in local demo data and also writes it to `localStorage`.
+
+Backend default mode is `FLOODSHIELD_MODE=local` (CSV + trained model, no FFD scrape). Set `FLOODSHIELD_MODE=live` when you want the live FFD bulletin path.
+
 ## Quick start
 
 ### Backend

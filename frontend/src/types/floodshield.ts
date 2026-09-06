@@ -54,7 +54,14 @@ export interface ModelInfo {
   f1_score?: number | null;
 }
 
-export type DataSourceMode = "api" | "mock" | "loading" | "error" | "empty";
+export type DataSourceMode =
+  | "api"
+  | "local"
+  | "cache"
+  | "mock"
+  | "loading"
+  | "error"
+  | "empty";
 
 export interface DashboardData {
   status: FloodStatus | null;

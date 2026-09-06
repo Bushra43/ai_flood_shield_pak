@@ -1,4 +1,11 @@
 import { MOCK_HISTORY, MOCK_MODEL_INFO, MOCK_STATUS } from "@/data/mock";
+import {
+  isValidHistory,
+  isValidModelInfo,
+  isValidStatus,
+  readCachedDashboard,
+  writeCachedDashboard,
+} from "@/lib/storage";
 import type {
   DashboardData,
   FloodStatus,
@@ -6,20 +13,40 @@ import type {
   ModelInfo,
 } from "@/types/floodshield";
 
-const DEFAULT_TIMEOUT_MS = 6000;
+const DEFAULT_TIMEOUT_MS = 20_000;
 
-function getBaseUrl(): string | null {
+/**
+ * Backend base URL for when FloodShield is deployed / running locally.
+ * Leave unset to serve built-in demo data from localStorage.
+ */
+export function getApiBaseUrl(): string | null {
   const base = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (!base) return null;
   return base.replace(/\/$/, "");
 }
 
-async function fetchJson<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const base = getBaseUrl();
-  if (!base) {
-    throw new Error("API base URL is not configured");
-  }
+function localDashboard(
+  overrides: Partial<DashboardData> = {},
+): DashboardData {
+  const fetchedAt = new Date().toISOString();
+  const payload: DashboardData = {
+    status: MOCK_STATUS,
+    history: MOCK_HISTORY,
+    modelInfo: MOCK_MODEL_INFO,
+    mode: "local",
+    lastFetchedAt: fetchedAt,
+    errorMessage: null,
+    ...overrides,
+  };
+  writeCachedDashboard(payload);
+  return payload;
+}
 
+async function fetchJson<T>(
+  base: string,
+  path: string,
+  signal?: AbortSignal,
+): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
@@ -45,58 +72,59 @@ async function fetchJson<T>(path: string, signal?: AbortSignal): Promise<T> {
   }
 }
 
-function isValidStatus(data: unknown): data is FloodStatus {
-  if (!data || typeof data !== "object") return false;
-  const s = data as Record<string, unknown>;
-  return (
-    typeof s.date === "string" &&
-    typeof s.river === "string" &&
-    typeof s.station === "string" &&
-    typeof s.current_inflow === "number" &&
-    typeof s.final_alert === "string"
-  );
-}
+function fromCacheOrLocal(errorMessage: string | null): DashboardData {
+  const cached = readCachedDashboard();
+  if (cached?.status) {
+    return {
+      ...cached,
+      mode: "cache",
+      lastFetchedAt: cached.lastFetchedAt ?? new Date().toISOString(),
+      errorMessage:
+        errorMessage ??
+        "Showing last saved FloodShield snapshot from local storage",
+    };
+  }
 
-function isValidHistory(data: unknown): data is HistoryPoint[] {
-  return (
-    Array.isArray(data) &&
-    data.every(
-      (item) =>
-        item &&
-        typeof item === "object" &&
-        typeof (item as HistoryPoint).date === "string" &&
-        typeof (item as HistoryPoint).inflow === "number" &&
-        typeof (item as HistoryPoint).outflow === "number",
-    )
-  );
+  return localDashboard({
+    mode: "mock",
+    errorMessage:
+      errorMessage ?? "Backend unavailable — showing demo data",
+  });
 }
 
 /**
  * Fetches FloodShield dashboard payloads from the Python backend.
- * Falls back to realistic mock data when the API is unavailable.
+ *
+ * Resolution order:
+ *  1. NEXT_PUBLIC_API_BASE_URL → live API (cached to localStorage)
+ *  2. localStorage cache from a previous successful load
+ *  3. Built-in local demo mock (also written to localStorage)
  */
 export async function fetchDashboardData(
   signal?: AbortSignal,
 ): Promise<DashboardData> {
-  const base = getBaseUrl();
+  const base = getApiBaseUrl();
   const fetchedAt = new Date().toISOString();
 
   if (!base) {
-    return {
-      status: MOCK_STATUS,
-      history: MOCK_HISTORY,
-      modelInfo: MOCK_MODEL_INFO,
-      mode: "mock",
-      lastFetchedAt: fetchedAt,
-      errorMessage: null,
-    };
+    const cached = readCachedDashboard();
+    if (cached?.status && cached.mode === "local") {
+      return {
+        ...cached,
+        mode: "local",
+        lastFetchedAt: fetchedAt,
+        errorMessage: null,
+      };
+    }
+    return localDashboard({ lastFetchedAt: fetchedAt });
   }
 
   try {
+    const refreshQuery = "?refresh=false";
     const [statusResult, historyResult, modelResult] = await Promise.allSettled([
-      fetchJson<FloodStatus>("/api/status", signal),
-      fetchJson<HistoryPoint[]>("/api/history", signal),
-      fetchJson<ModelInfo>("/api/model-info", signal),
+      fetchJson<FloodStatus>(base, `/api/status${refreshQuery}`, signal),
+      fetchJson<HistoryPoint[]>(base, "/api/history?limit=30", signal),
+      fetchJson<ModelInfo>(base, "/api/model-info", signal),
     ]);
 
     const status =
@@ -105,38 +133,29 @@ export async function fetchDashboardData(
         : null;
 
     const history =
-      historyResult.status === "fulfilled" && isValidHistory(historyResult.value)
+      historyResult.status === "fulfilled" &&
+      isValidHistory(historyResult.value)
         ? historyResult.value
         : null;
 
     const modelInfo =
-      modelResult.status === "fulfilled" && modelResult.value
+      modelResult.status === "fulfilled" &&
+      isValidModelInfo(modelResult.value)
         ? modelResult.value
         : null;
 
-    if (!status && !history) {
-      return {
-        status: MOCK_STATUS,
-        history: MOCK_HISTORY,
-        modelInfo: modelInfo ?? MOCK_MODEL_INFO,
-        mode: "mock",
-        lastFetchedAt: fetchedAt,
-        errorMessage: "Backend unavailable — showing demo data",
-      };
-    }
-
     if (!status) {
-      return {
-        status: MOCK_STATUS,
-        history: history ?? MOCK_HISTORY,
-        modelInfo: modelInfo ?? MOCK_MODEL_INFO,
-        mode: "mock",
-        lastFetchedAt: fetchedAt,
-        errorMessage: "Status endpoint unavailable — using demo status",
-      };
+      const reason =
+        statusResult.status === "rejected"
+          ? statusResult.reason instanceof Error
+            ? statusResult.reason.message
+            : "Status endpoint unavailable"
+          : "Status endpoint returned an invalid payload";
+
+      return fromCacheOrLocal(reason);
     }
 
-    return {
+    const payload: DashboardData = {
       status,
       history: history ?? [],
       modelInfo: modelInfo ?? MOCK_MODEL_INFO,
@@ -144,18 +163,16 @@ export async function fetchDashboardData(
       lastFetchedAt: fetchedAt,
       errorMessage: null,
     };
+
+    writeCachedDashboard(payload);
+    return payload;
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unable to reach FloodShield API";
+      error instanceof Error
+        ? error.message
+        : "Unable to reach FloodShield API";
 
-    return {
-      status: MOCK_STATUS,
-      history: MOCK_HISTORY,
-      modelInfo: MOCK_MODEL_INFO,
-      mode: "mock",
-      lastFetchedAt: fetchedAt,
-      errorMessage: message,
-    };
+    return fromCacheOrLocal(message);
   }
 }
 

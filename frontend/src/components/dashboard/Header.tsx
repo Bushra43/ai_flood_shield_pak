@@ -76,6 +76,8 @@ export function Header({
           {(mode === "mock" || mode === "error") && (
             <Badge variant="demo">Demo Data</Badge>
           )}
+          {mode === "local" && <Badge variant="demo">Local Data</Badge>}
+          {mode === "cache" && <Badge variant="demo">Cached</Badge>}
 
           <div className="hidden text-right md:block">
             <p className="text-[10px] uppercase tracking-wider text-slate-400">
