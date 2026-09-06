@@ -1,0 +1,21 @@
+
+PS D:\Qoder Projects\AI Flood Shield PAK> & D:/Installations/Python_install/python.exe "d:/Qoder Projects/AI Flood Shield PAK/code files/extract_data.py"
+INFO: Reading PDFs from D:\Qoder Projects\AI Flood Shield PAK\data\raw\bulletins
+WARNING: No quantitative forecast table found in 15062024.pdf
+WARNING: No quantitative forecast table found in 16062024.pdf
+WARNING: No quantitative forecast table found in 17062024.pdf
+WARNING: No quantitative forecast table found in 18062024.pdf
+WARNING: No quantitative forecast table found in 19062024.pdf
+WARNING: No quantitative forecast table found in 20062024.pdf
+WARNING: No quantitative forecast table found in 21062024.pdf
+WARNING: No quantitative forecast table found in 22062024.pdf
+WARNING: No quantitative forecast table found in 23062024.pdf
+WARNING: No quantitative forecast table found in 24062024.pdf
+WARNING: No quantitative forecast table found in 01092025.pdf
+WARNING: No quantitative forecast table found in 02092025.pdf
+WARNING: No quantitative forecast table found in 10082025.pdf
+WARNING: No quantitative forecast table found in 11082025.pdf
+WARNING: No quantitative forecast table found in 12082025.pdf
+INFO: Wrote 6610 rows to D:\Qoder Projects\AI Flood Shield PAK\code files\extracted_data.csv
+INFO: Date range: 2024-06-16 00:00:00 -> 2026-09-03 00:00:00
+PS D:\Qoder Projects\AI Flood Shield PAK> 
