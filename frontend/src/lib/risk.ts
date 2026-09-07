@@ -38,6 +38,7 @@ export function getRiskTone(level: RiskLevel): RiskTone {
   if (value === "high") return "high";
   if (value === "very high" || value === "severe") return "severe";
   if (value === "extreme" || value === "critical") return "extreme";
+  if (value === "unknown" || value === "") return "unknown";
   return "unknown";
 }
 

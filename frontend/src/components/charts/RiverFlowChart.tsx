@@ -204,7 +204,9 @@ export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
 }
 
 function addDays(isoDate: string, days: number): string {
-  const date = new Date(`${isoDate}T00:00:00`);
-  date.setDate(date.getDate() + days);
+  // Calendar-day math in UTC so local TZ cannot collapse +1 day back onto the same ISO date.
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }

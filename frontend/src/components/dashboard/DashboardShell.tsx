@@ -16,8 +16,8 @@ import { MlPredictionPanel } from "@/components/model/MlPredictionPanel";
 import { ModelDevelopment } from "@/components/model/ModelDevelopment";
 import { ProjectInfo } from "@/components/model/ProjectInfo";
 import { Section } from "@/components/ui/section";
-import { useFloodShieldData } from "@/lib/hooks/useFloodShieldData";
 import { MOCK_MODEL_INFO } from "@/data/mock";
+import { useFloodShieldData } from "@/lib/hooks/useFloodShieldData";
 
 export function DashboardShell() {
   const { data, isLoading, isRefreshing, refresh } = useFloodShieldData();
