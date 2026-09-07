@@ -1,6 +1,21 @@
+---
+title: FloodShield API
+emoji: 🌊
+colorFrom: blue
+colorTo: cyan
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app.py
+python_version: "3.11"
+pinned: false
+short_description: Chenab @ Marala flood-risk API for AI FloodShield PAK
+---
+
 # AI FloodShield PAK
 
 Early flood-risk alerting for the **Chenab River at Marala**, combining live FFD observations, official thresholds, and a next-day ML risk model into English and Urdu alerts.
+
+**Live API (Hugging Face Space):** [sardar19/floodshield-api](https://huggingface.co/spaces/sardar19/floodshield-api) — `https://sardar19-floodshield-api.hf.space`
 
 ## Repository layout
 
@@ -92,6 +107,19 @@ python scripts/train_model.py       # train + write ml/models/*.pkl
 | Exceptional  | 600       |
 | Design capacity | 1,100  |
 
+## Hugging Face Space
+
+The free Space uses the **Gradio** SDK (not Docker). Root `app.py` wraps FastAPI and still serves `/api/health`, `/api/status`, `/api/history`, `/api/model-info`.
+
+On the Space, add **Secrets** (Settings → Variables and secrets):
+
+- `FLOODSHIELD_MODE` = `local`
+- `DASHSCOPE_API_KEY` = your Qwen key
+- `DASHSCOPE_BASE_URL` = `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+- `CORS_ORIGINS` = your dashboard URL (optional; Vercel/Firebase/HF origins are already allowed)
+
+Then point the frontend at `https://sardar19-floodshield-api.hf.space`.
+
 ## Environment
 
 Never commit real API keys. Use:
@@ -99,6 +127,7 @@ Never commit real API keys. Use:
 - `backend/.env.example` → `backend/.env`
 - `frontend/.env.example` → `frontend/.env.local`
 - Root `.env.example` for reference
+- Hugging Face Space secrets for the deployed API
 
 ## License / notes
 
