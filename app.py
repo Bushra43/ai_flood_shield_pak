@@ -1,12 +1,7 @@
 """Hugging Face Spaces entrypoint (Gradio + ZeroGPU).
 
-ZeroGPU must call Gradio's own launch(). Dashboard REST routes are attached
-to that same FastAPI app so /api/* and the Gradio UI share one port.
-
-  GET /api/health
-  GET /api/status
-  GET /api/history
-  GET /api/model-info
+ZeroGPU owns Gradio launch() on port 7860. Dashboard REST routes are added
+as HTTP middleware so /api/* is not swallowed by the Gradio SPA.
 """
 
 from __future__ import annotations
@@ -25,40 +20,51 @@ load_dotenv(ROOT / ".env")
 
 import spaces
 import gradio as gr
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
 from gradio.routes import App
+from starlette.responses import JSONResponse
 
-from api_service import get_health, get_status
-from main import app as backend_app
+from api_service import get_health, get_history, get_model_info, get_status
 
-_ORIG_CREATE_APP = App.create_app
-
-
-@classmethod  # type: ignore[misc]
-def _create_app_with_api(cls, *args, **kwargs):
-    fastapi_app = _ORIG_CREATE_APP(*args, **kwargs)
-    fastapi_app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-        ],
-        allow_origin_regex=(
-            r"https://.*\.(vercel\.app|netlify\.app|web\.app|"
-            r"firebaseapp\.com|hf\.space)"
-        ),
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    for route in backend_app.routes:
-        path = getattr(route, "path", "")
-        if path.startswith("/api"):
-            fastapi_app.routes.append(route)
-    return fastapi_app
+_ORIG_APP_INIT = App.__init__
 
 
-App.create_app = _create_app_with_api
+def _patched_app_init(self, *args, **kwargs):
+    _ORIG_APP_INIT(self, *args, **kwargs)
+
+    @self.middleware("http")
+    async def floodshield_api(request, call_next):
+        if request.method not in ("GET", "HEAD"):
+            return await call_next(request)
+
+        path = request.url.path.rstrip("/") or "/"
+
+        try:
+            if path == "/api/health":
+                return JSONResponse(jsonable_encoder(get_health()))
+            if path == "/api/status":
+                refresh = request.query_params.get("refresh", "false").lower() in {
+                    "1",
+                    "true",
+                    "yes",
+                }
+                return JSONResponse(
+                    jsonable_encoder(get_status(force_refresh=refresh))
+                )
+            if path == "/api/history":
+                limit = int(request.query_params.get("limit", "30"))
+                return JSONResponse(jsonable_encoder(get_history(limit)))
+            if path == "/api/model-info":
+                return JSONResponse(jsonable_encoder(get_model_info()))
+        except FileNotFoundError as exc:
+            return JSONResponse({"detail": str(exc)}, status_code=503)
+        except Exception as exc:  # noqa: BLE001
+            return JSONResponse({"detail": str(exc)}, status_code=500)
+
+        return await call_next(request)
+
+
+App.__init__ = _patched_app_init
 
 
 @spaces.GPU
