@@ -50,6 +50,105 @@ function localDashboard(
   return payload;
 }
 
+function isHuggingFaceSpace(base: string): boolean {
+  return /hf\.space|huggingface\.co/i.test(base);
+}
+
+function parseGradioSse<T>(text: string): T {
+  const events = text.split("\n\n");
+  let lastError: string | null = null;
+
+  for (const event of events) {
+    const lines = event.split("\n");
+    const eventName = lines
+      .find((line) => line.startsWith("event:"))
+      ?.slice(6)
+      .trim();
+    const dataLine = lines.find((line) => line.startsWith("data:"));
+    if (!dataLine) continue;
+
+    const raw = dataLine.slice(5).trim();
+    if (!raw || raw === "null") continue;
+
+    let data: unknown;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      continue;
+    }
+
+    if (eventName === "error") {
+      const err = data as { error?: string };
+      lastError = err.error ?? "Gradio error";
+      continue;
+    }
+
+    if (data && typeof data === "object") {
+      const record = data as Record<string, unknown>;
+      const output = record.output as { data?: unknown[] } | undefined;
+      if (output?.data && output.data.length > 0) {
+        return output.data[0] as T;
+      }
+      if (Array.isArray(record.data) && record.data.length > 0) {
+        return record.data[0] as T;
+      }
+    }
+  }
+
+  throw new Error(lastError ?? "Gradio response missing data");
+}
+
+async function fetchGradio<T>(
+  base: string,
+  apiName: string,
+  signal?: AbortSignal,
+): Promise<T> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+  const onAbort = () => controller.abort();
+  signal?.addEventListener("abort", onAbort);
+
+  try {
+    const started = await fetch(`${base}/gradio_api/call/${apiName}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: [] }),
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    if (!started.ok) {
+      throw new Error(`Gradio call failed (${started.status}) for ${apiName}`);
+    }
+
+    const payload = (await started.json()) as { event_id?: string };
+    if (!payload.event_id) {
+      throw new Error(`Gradio call missing event_id for ${apiName}`);
+    }
+
+    const stream = await fetch(
+      `${base}/gradio_api/call/${apiName}/${payload.event_id}`,
+      {
+        headers: { Accept: "text/event-stream" },
+        cache: "no-store",
+        signal: controller.signal,
+      },
+    );
+
+    if (!stream.ok) {
+      throw new Error(`Gradio stream failed (${stream.status}) for ${apiName}`);
+    }
+
+    return parseGradioSse<T>(await stream.text());
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", onAbort);
+  }
+}
+
 async function fetchJson<T>(
   base: string,
   path: string,
@@ -128,12 +227,17 @@ export async function fetchDashboardData(
   }
 
   try {
-    const refreshQuery = "?refresh=false";
-    const [statusResult, historyResult, modelResult] = await Promise.allSettled([
-      fetchJson<FloodStatus>(base, `/api/status${refreshQuery}`, signal),
-      fetchJson<HistoryPoint[]>(base, "/api/history?limit=30", signal),
-      fetchJson<ModelInfo>(base, "/api/model-info", signal),
-    ]);
+    const [statusResult, historyResult, modelResult] = isHuggingFaceSpace(base)
+      ? await Promise.allSettled([
+          fetchGradio<FloodStatus>(base, "status", signal),
+          fetchGradio<HistoryPoint[]>(base, "history", signal),
+          fetchGradio<ModelInfo>(base, "model_info", signal),
+        ])
+      : await Promise.allSettled([
+          fetchJson<FloodStatus>(base, "/api/status?refresh=false", signal),
+          fetchJson<HistoryPoint[]>(base, "/api/history?limit=30", signal),
+          fetchJson<ModelInfo>(base, "/api/model-info", signal),
+        ]);
 
     const status =
       statusResult.status === "fulfilled" && isValidStatus(statusResult.value)

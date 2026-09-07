@@ -1,7 +1,10 @@
 """Hugging Face Spaces entrypoint (Gradio + ZeroGPU).
 
-ZeroGPU owns Gradio launch() on port 7860. Dashboard REST routes are added
-as HTTP middleware so /api/* is not swallowed by the Gradio SPA.
+Hugging Face's proxy only forwards /gradio_api/* to Python. The Next.js
+dashboard therefore calls those Gradio endpoints, not /api/*.
+
+A tiny @spaces.GPU function is required so ZeroGPU will boot. The real
+FloodShield handlers stay on CPU so they do not burn GPU quota.
 """
 
 from __future__ import annotations
@@ -20,67 +23,29 @@ load_dotenv(ROOT / ".env")
 
 import spaces
 import gradio as gr
-from fastapi.encoders import jsonable_encoder
-from gradio.routes import App
-from starlette.responses import JSONResponse
 
 from api_service import get_health, get_history, get_model_info, get_status
 
-_ORIG_APP_INIT = App.__init__
+
+@spaces.GPU(duration=10)
+def gpu_warmup() -> str:
+    return "ok"
 
 
-def _patched_app_init(self, *args, **kwargs):
-    _ORIG_APP_INIT(self, *args, **kwargs)
-
-    @self.middleware("http")
-    async def floodshield_api(request, call_next):
-        if request.method not in ("GET", "HEAD"):
-            return await call_next(request)
-
-        path = request.url.path.rstrip("/") or "/"
-
-        try:
-            if path == "/api/health":
-                return JSONResponse(jsonable_encoder(get_health()))
-            if path == "/api/status":
-                refresh = request.query_params.get("refresh", "false").lower() in {
-                    "1",
-                    "true",
-                    "yes",
-                }
-                return JSONResponse(
-                    jsonable_encoder(get_status(force_refresh=refresh))
-                )
-            if path == "/api/history":
-                limit = int(request.query_params.get("limit", "30"))
-                return JSONResponse(jsonable_encoder(get_history(limit)))
-            if path == "/api/model-info":
-                return JSONResponse(jsonable_encoder(get_model_info()))
-        except FileNotFoundError as exc:
-            return JSONResponse({"detail": str(exc)}, status_code=503)
-        except Exception as exc:  # noqa: BLE001
-            return JSONResponse({"detail": str(exc)}, status_code=500)
-
-        return await call_next(request)
+def api_health() -> dict:
+    return get_health()
 
 
-App.__init__ = _patched_app_init
+def api_status() -> dict:
+    return get_status(force_refresh=False)
 
 
-@spaces.GPU
-def gpu_health() -> dict:
-    try:
-        return get_health()
-    except Exception as exc:  # noqa: BLE001
-        return {"ok": False, "error": str(exc)}
+def api_history() -> list:
+    return get_history(30)
 
 
-@spaces.GPU
-def gpu_status() -> dict:
-    try:
-        return get_status(force_refresh=True)
-    except Exception as exc:  # noqa: BLE001
-        return {"ok": False, "error": str(exc)}
+def api_model_info() -> dict:
+    return get_model_info()
 
 
 with gr.Blocks(title="AI FloodShield PAK") as demo:
@@ -89,19 +54,24 @@ with gr.Blocks(title="AI FloodShield PAK") as demo:
 # AI FloodShield PAK
 Chenab River @ Marala — flood-risk API for the dashboard.
 
-**REST endpoints** (used by the Next.js app):
-- `/api/health`
-- `/api/status`
-- `/api/history`
-- `/api/model-info`
+The Next.js app calls Gradio endpoints:
+`/gradio_api/call/health`, `/status`, `/history`, `/model_info`.
         """
     )
     with gr.Row():
         health_btn = gr.Button("Health check")
         status_btn = gr.Button("Current flood status")
     output = gr.JSON(label="Response")
-    health_btn.click(fn=gpu_health, outputs=output)
-    status_btn.click(fn=gpu_status, outputs=output)
+    health_btn.click(fn=api_health, outputs=output, api_name="health")
+    status_btn.click(fn=api_status, outputs=output, api_name="status")
+
+    history_btn = gr.Button("History", visible=False)
+    model_btn = gr.Button("Model info", visible=False)
+    warmup_btn = gr.Button("Warmup", visible=False)
+    extra = gr.JSON(visible=False)
+    history_btn.click(fn=api_history, outputs=extra, api_name="history")
+    model_btn.click(fn=api_model_info, outputs=extra, api_name="model_info")
+    warmup_btn.click(fn=gpu_warmup, outputs=extra, api_name="warmup")
 
 demo.queue()
 demo.launch(server_name="0.0.0.0", server_port=7860)
