@@ -83,6 +83,10 @@ function parseGradioSse<T>(text: string): T {
       continue;
     }
 
+    if (Array.isArray(data) && data.length > 0) {
+      return data[0] as T;
+    }
+
     if (data && typeof data === "object") {
       const record = data as Record<string, unknown>;
       const output = record.output as { data?: unknown[] } | undefined;
