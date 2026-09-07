@@ -1,18 +1,16 @@
 """Hugging Face Spaces entrypoint (Gradio + ZeroGPU).
 
-Serves FastAPI dashboard routes and a small Gradio UI:
+ZeroGPU must call Gradio's own launch(). Dashboard REST routes are attached
+to that same FastAPI app so /api/* and the Gradio UI share one port.
 
   GET /api/health
   GET /api/status
   GET /api/history
   GET /api/model-info
-  GET /docs
-  /ui  Gradio UI
 """
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -27,9 +25,40 @@ load_dotenv(ROOT / ".env")
 
 import spaces
 import gradio as gr
-import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+from gradio.routes import App
+
 from api_service import get_health, get_status
 from main import app as backend_app
+
+_ORIG_CREATE_APP = App.create_app
+
+
+@classmethod  # type: ignore[misc]
+def _create_app_with_api(cls, *args, **kwargs):
+    fastapi_app = _ORIG_CREATE_APP(*args, **kwargs)
+    fastapi_app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ],
+        allow_origin_regex=(
+            r"https://.*\.(vercel\.app|netlify\.app|web\.app|"
+            r"firebaseapp\.com|hf\.space)"
+        ),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    for route in backend_app.routes:
+        path = getattr(route, "path", "")
+        if path.startswith("/api"):
+            fastapi_app.routes.append(route)
+    return fastapi_app
+
+
+App.create_app = _create_app_with_api
 
 
 @spaces.GPU
@@ -59,7 +88,6 @@ Chenab River @ Marala — flood-risk API for the dashboard.
 - `/api/status`
 - `/api/history`
 - `/api/model-info`
-- `/docs`
         """
     )
     with gr.Row():
@@ -70,25 +98,4 @@ Chenab River @ Marala — flood-risk API for the dashboard.
     status_btn.click(fn=gpu_status, outputs=output)
 
 demo.queue()
-app = gr.mount_gradio_app(backend_app, demo, path="/ui")
-
-_started = False
-
-
-def _launch(*_args, **kwargs):
-    """Start the combined FastAPI+Gradio app once (HF may also call launch)."""
-    global _started
-    if _started:
-        return app
-    _started = True
-    port = kwargs.get("server_port") or int(
-        os.getenv("PORT", os.getenv("GRADIO_SERVER_PORT", "7860"))
-    )
-    uvicorn.run(app, host="0.0.0.0", port=int(port))
-    return app
-
-
-demo.launch = _launch  # type: ignore[method-assign]
-
-if __name__ == "__main__":
-    demo.launch()
+demo.launch(server_name="0.0.0.0", server_port=7860)
