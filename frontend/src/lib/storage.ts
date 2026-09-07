@@ -31,7 +31,11 @@ export function writeCachedDashboard(data: DashboardData): void {
 
   try {
     window.localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ?? "";
+    const configured = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const base =
+      configured !== undefined
+        ? configured.trim()
+        : "https://sardar19-floodshield-api.hf.space";
     window.localStorage.setItem(CACHE_META_KEY, base);
   } catch {
     // Quota / private mode — ignore cache write failures.

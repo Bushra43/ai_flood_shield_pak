@@ -13,16 +13,24 @@ import type {
   ModelInfo,
 } from "@/types/floodshield";
 
-const DEFAULT_TIMEOUT_MS = 20_000;
+const DEFAULT_TIMEOUT_MS = 90_000;
+
+const DEPLOYED_API_BASE_URL = "https://sardar19-floodshield-api.hf.space";
 
 /**
- * Backend base URL for when FloodShield is deployed / running locally.
- * Leave unset to serve built-in demo data from localStorage.
+ * Backend base URL.
+ * - Unset → live Hugging Face Space
+ * - Empty string → built-in demo data
+ * - Any other value → that API (local FastAPI, etc.)
  */
 export function getApiBaseUrl(): string | null {
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-  if (!base) return null;
-  return base.replace(/\/$/, "");
+  const raw = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (raw !== undefined) {
+    const base = raw.trim();
+    if (!base) return null;
+    return base.replace(/\/$/, "");
+  }
+  return DEPLOYED_API_BASE_URL;
 }
 
 function localDashboard(

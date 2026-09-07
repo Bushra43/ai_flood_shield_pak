@@ -1,13 +1,14 @@
-"""Hugging Face Spaces entrypoint (Gradio SDK).
+"""Hugging Face Spaces entrypoint (Gradio + ZeroGPU).
 
-Free Spaces cannot use Docker here, so this file wraps the existing FastAPI
-app in Gradio and still exposes the dashboard REST routes:
+Keeps the FastAPI dashboard routes:
 
   GET /api/health
   GET /api/status
   GET /api/history
   GET /api/model-info
   GET /docs
+
+ZeroGPU requires @spaces.GPU on functions that Gradio actually calls.
 """
 
 from __future__ import annotations
@@ -25,50 +26,22 @@ from dotenv import load_dotenv
 load_dotenv(BACKEND_DIR / ".env")
 load_dotenv(ROOT / ".env")
 
-try:
-    import spaces
-except ImportError:  # CPU Spaces do not ship this package
-
-    class spaces:  # type: ignore[no-redef]
-        @staticmethod
-        def GPU(fn=None, **_kwargs):
-            def deco(func):
-                return func
-
-            return deco if fn is None else deco(fn)
-
-
-@spaces.GPU
-def _zero_gpu_placeholder() -> str:
-    """ZeroGPU Spaces refuse to boot unless at least one @spaces.GPU exists.
-
-    The flood model is sklearn on CPU; this function is never called.
-    """
-    return "ok"
-
-
-import gradio as gr
 import spaces
+import gradio as gr
 from api_service import get_health, get_status
 from main import app as backend_app
 
 
-# ZeroGPU Spaces refuse to start unless they find at least one @spaces.GPU
-# function in this file. The flood model is sklearn on CPU; this is only a
-# hardware marker.
 @spaces.GPU
-def _zero_gpu_marker() -> str:
-    return "ok"
-
-
-def _health_payload() -> dict:
+def gpu_health() -> dict:
     try:
         return get_health()
     except Exception as exc:  # noqa: BLE001
         return {"ok": False, "error": str(exc)}
 
 
-def _status_payload() -> dict:
+@spaces.GPU
+def gpu_status() -> dict:
     try:
         return get_status(force_refresh=True)
     except Exception as exc:  # noqa: BLE001
@@ -81,7 +54,7 @@ with gr.Blocks(title="AI FloodShield PAK") as demo:
 # AI FloodShield PAK
 Chenab River @ Marala — flood-risk API for the dashboard.
 
-**REST endpoints** (use these from the Next.js app):
+**REST endpoints** (used by the Next.js app):
 - `/api/health`
 - `/api/status`
 - `/api/history`
@@ -93,9 +66,10 @@ Chenab River @ Marala — flood-risk API for the dashboard.
         health_btn = gr.Button("Health check")
         status_btn = gr.Button("Current flood status")
     output = gr.JSON(label="Response")
-    health_btn.click(_health_payload, outputs=output)
-    status_btn.click(_status_payload, outputs=output)
+    health_btn.click(fn=gpu_health, outputs=output)
+    status_btn.click(fn=gpu_status, outputs=output)
 
+demo.queue()
 app = gr.mount_gradio_app(backend_app, demo, path="/ui")
 
 if __name__ == "__main__":
