@@ -25,6 +25,28 @@ from dotenv import load_dotenv
 load_dotenv(BACKEND_DIR / ".env")
 load_dotenv(ROOT / ".env")
 
+try:
+    import spaces
+except ImportError:  # CPU Spaces do not ship this package
+
+    class spaces:  # type: ignore[no-redef]
+        @staticmethod
+        def GPU(fn=None, **_kwargs):
+            def deco(func):
+                return func
+
+            return deco if fn is None else deco(fn)
+
+
+@spaces.GPU
+def _zero_gpu_placeholder() -> str:
+    """ZeroGPU Spaces refuse to boot unless at least one @spaces.GPU exists.
+
+    The flood model is sklearn on CPU; this function is never called.
+    """
+    return "ok"
+
+
 import gradio as gr
 from api_service import get_health, get_status
 from main import app as backend_app
