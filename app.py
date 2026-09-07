@@ -1,18 +1,18 @@
 """Hugging Face Spaces entrypoint (Gradio + ZeroGPU).
 
-Keeps the FastAPI dashboard routes:
+Serves FastAPI dashboard routes and a small Gradio UI:
 
   GET /api/health
   GET /api/status
   GET /api/history
   GET /api/model-info
   GET /docs
-
-ZeroGPU requires @spaces.GPU on functions that Gradio actually calls.
+  /ui  Gradio UI
 """
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -27,6 +27,7 @@ load_dotenv(ROOT / ".env")
 
 import spaces
 import gradio as gr
+import uvicorn
 from api_service import get_health, get_status
 from main import app as backend_app
 
@@ -70,3 +71,24 @@ Chenab River @ Marala — flood-risk API for the dashboard.
 
 demo.queue()
 app = gr.mount_gradio_app(backend_app, demo, path="/ui")
+
+_started = False
+
+
+def _launch(*_args, **kwargs):
+    """Start the combined FastAPI+Gradio app once (HF may also call launch)."""
+    global _started
+    if _started:
+        return app
+    _started = True
+    port = kwargs.get("server_port") or int(
+        os.getenv("PORT", os.getenv("GRADIO_SERVER_PORT", "7860"))
+    )
+    uvicorn.run(app, host="0.0.0.0", port=int(port))
+    return app
+
+
+demo.launch = _launch  # type: ignore[method-assign]
+
+if __name__ == "__main__":
+    demo.launch()
