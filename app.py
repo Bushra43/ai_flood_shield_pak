@@ -48,8 +48,17 @@ def _zero_gpu_placeholder() -> str:
 
 
 import gradio as gr
+import spaces
 from api_service import get_health, get_status
 from main import app as backend_app
+
+
+# ZeroGPU Spaces refuse to start unless they find at least one @spaces.GPU
+# function in this file. The flood model is sklearn on CPU; this is only a
+# hardware marker.
+@spaces.GPU
+def _zero_gpu_marker() -> str:
+    return "ok"
 
 
 def _health_payload() -> dict:
