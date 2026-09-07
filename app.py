@@ -13,7 +13,6 @@ ZeroGPU requires @spaces.GPU on functions that Gradio actually calls.
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -71,12 +70,3 @@ Chenab River @ Marala — flood-risk API for the dashboard.
 
 demo.queue()
 app = gr.mount_gradio_app(backend_app, demo, path="/ui")
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", os.getenv("GRADIO_SERVER_PORT", "7860"))),
-    )
