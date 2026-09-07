@@ -2,7 +2,7 @@
 title: FloodShield API
 emoji: 🌊
 colorFrom: blue
-colorTo: cyan
+colorTo: green
 sdk: gradio
 sdk_version: 6.26.0
 app_file: app.py
