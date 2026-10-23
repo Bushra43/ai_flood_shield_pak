@@ -13,7 +13,7 @@ import pandas as pd
 
 LOGGER = logging.getLogger(__name__)
 
-ML_DIR = Path(__file__).resolve().parent.parent
+ML_DIR = Path(__file__).resolve().parents[1]
 INPUT_CSV = ML_DIR / "data" / "processed" / "extracted_data.csv"
 
 

@@ -2,7 +2,11 @@ export function formatCusecs(value: number, decimals = 1): string {
   return `${value.toFixed(decimals)}k`;
 }
 
-export function formatPercent(value: number, decimals = 1): string {
+export function formatPercent(
+  value: number | null | undefined,
+  decimals = 1,
+): string {
+  if (value == null || Number.isNaN(value)) return "n/a";
   return `${value.toFixed(decimals)}%`;
 }
 

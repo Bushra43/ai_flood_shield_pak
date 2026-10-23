@@ -19,6 +19,19 @@ export const MOCK_STATUS: FloodStatus = {
   urdu_alert:
     "چناب ندی مارالہ پر فلڈ کا خطرہ ابھی کم ہے۔ آب کا داخلہ 51.9 ہزار کیوسکس ہے اور باہر جانے والا آب 26.1 ہزار کیوسکس ہے۔ اگلے 24 گھنٹوں کے لیے توقع ہے کہ داخلہ 100-120 ہزار کیوسکس تک بڑھ جائے، لیکن کلی طور پر خطرہ کم رہے گا۔ ماشین لرننگ ماڈل نے کل کے لیے عام حالات کی پیش گوئی کی ہے۔ حکومتی ہدایات کی پیروی کریں۔ یہ انتباہ موجودہ ڈیٹا اور ماڈلز پر مبنی ہے؛ حالات تبدیل ہو سکتے ہیں۔",
   alert_generated_by: "Qwen",
+  forecast_status: "current",
+  seven_day_outlook: {
+    issue_date: "2026-09-04",
+    days: [
+      { forecast_date: "2026-09-05", horizon_days: 1, final_risk: "Low", forecast_status: "current" },
+      { forecast_date: "2026-09-06", horizon_days: 2, final_risk: "Normal", forecast_status: "forecast" },
+      { forecast_date: "2026-09-07", horizon_days: 3, final_risk: "Normal", forecast_status: "forecast" },
+      { forecast_date: "2026-09-08", horizon_days: 4, final_risk: "Normal", forecast_status: "forecast" },
+      { forecast_date: "2026-09-09", horizon_days: 5, final_risk: "Low", forecast_status: "forecast" },
+      { forecast_date: "2026-09-10", horizon_days: 6, final_risk: "Normal", forecast_status: "forecast" },
+      { forecast_date: "2026-09-11", horizon_days: 7, final_risk: "Normal", forecast_status: "forecast" },
+    ],
+  },
 };
 
 export const MOCK_HISTORY: HistoryPoint[] = [
@@ -46,10 +59,10 @@ export const MOCK_MODEL_INFO: ModelInfo = {
   river: "Chenab",
   station: "Marala",
   data_source: "FFD / PMD",
-  ml_engine: "Flood Risk Classification",
+  ml_engine: "7 calendar-horizon classifiers (day +1…+7)",
   generative_ai: "Qwen",
   live_data: "FFD Bulletin",
-  output: "Bilingual Early Warning",
+  output: "Bilingual Early Warning + seven-day outlook",
   accuracy: null,
   precision: null,
   recall: null,

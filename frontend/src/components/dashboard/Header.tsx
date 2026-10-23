@@ -20,6 +20,7 @@ const NAV_ITEMS = [
 interface HeaderProps {
   lastUpdated: string | null;
   mode: DataSourceMode;
+  bulletinStatus?: string | null;
   isRefreshing: boolean;
   onRefresh: () => void;
 }
@@ -27,6 +28,7 @@ interface HeaderProps {
 export function Header({
   lastUpdated,
   mode,
+  bulletinStatus,
   isRefreshing,
   onRefresh,
 }: HeaderProps) {
@@ -34,6 +36,8 @@ export function Header({
   const displayDate = lastUpdated
     ? formatDisplayDate(lastUpdated.slice(0, 10))
     : "04 Sep 2026";
+  const showLive =
+    mode === "api" && (!bulletinStatus || bulletinStatus === "current");
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-[#f5f8fb]/90 backdrop-blur-md">
@@ -65,13 +69,20 @@ export function Header({
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <Badge variant="live" className="hidden sm:inline-flex">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
-            LIVE
-          </Badge>
+          {showLive ? (
+            <Badge variant="live" className="hidden sm:inline-flex">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              LIVE
+            </Badge>
+          ) : null}
+          {bulletinStatus && bulletinStatus !== "current" && mode === "api" ? (
+            <Badge variant="outline" className="hidden border-amber-300 text-amber-800 sm:inline-flex">
+              {bulletinStatus}
+            </Badge>
+          ) : null}
 
           {(mode === "mock" || mode === "error") && (
             <Badge variant="demo">Demo Data</Badge>

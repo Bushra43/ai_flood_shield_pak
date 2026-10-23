@@ -19,7 +19,7 @@ import pdfplumber
 
 LOGGER = logging.getLogger(__name__)
 
-ML_DIR = Path(__file__).resolve().parent.parent
+ML_DIR = Path(__file__).resolve().parents[1]
 BULLETINS_DIR = ML_DIR / "data" / "raw" / "bulletins"
 OUTPUT_CSV = ML_DIR / "data" / "processed" / "extracted_data.csv"
 
@@ -340,8 +340,6 @@ def main() -> None:
 
     LOGGER.info("Reading PDFs from %s", args.bulletins_dir)
     df = extract_all(args.bulletins_dir, station=args.station)
-
-    args.output.parent.mkdir(parents=True, exist_ok=True)
 
     output_columns = [
         "date",

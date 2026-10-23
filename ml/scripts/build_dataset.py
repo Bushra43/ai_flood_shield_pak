@@ -6,10 +6,9 @@ from pathlib import Path
 # File paths
 # --------------------------------------------------
 
-ML_DIR = Path(__file__).resolve().parent.parent
-PROCESSED_DIR = ML_DIR / "data" / "processed"
-INPUT_FILE = PROCESSED_DIR / "extracted_data.csv"
-OUTPUT_FILE = PROCESSED_DIR / "chenab_marala_dataset.csv"
+ML_DIR = Path(__file__).resolve().parents[1]
+INPUT_FILE = str(ML_DIR / "data" / "processed" / "extracted_data.csv")
+OUTPUT_FILE = str(ML_DIR / "data" / "processed" / "chenab_marala_dataset.csv")
 
 
 # --------------------------------------------------

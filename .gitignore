@@ -35,6 +35,9 @@ frontend/next-env.d.ts
 ml/data/raw/
 data/raw/
 
+# Pasted full project dump (~2.5GB) — never commit; migrate into ml/ then delete
+AI Flood Shield PAK/
+
 # OS / editor
 .DS_Store
 Thumbs.db

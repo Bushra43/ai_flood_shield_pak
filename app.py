@@ -54,6 +54,9 @@ with gr.Blocks(title="AI FloodShield PAK") as demo:
 # AI FloodShield PAK
 Chenab River @ Marala — flood-risk API for the dashboard.
 
+`/status` returns day+1 fields (`ml_next_day_risk`, …) plus
+`seven_day_outlook` (calendar horizons day +1 … +7).
+
 The Next.js app calls Gradio endpoints:
 `/gradio_api/call/health`, `/status`, `/history`, `/model_info`.
         """

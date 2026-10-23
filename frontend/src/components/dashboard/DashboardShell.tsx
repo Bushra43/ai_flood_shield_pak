@@ -18,6 +18,34 @@ import { ProjectInfo } from "@/components/model/ProjectInfo";
 import { Section } from "@/components/ui/section";
 import { MOCK_MODEL_INFO } from "@/data/mock";
 import { useFloodShieldData } from "@/lib/hooks/useFloodShieldData";
+import type { FloodStatus } from "@/types/floodshield";
+
+function SevenDayOutlook({ status }: { status: FloodStatus }) {
+  const days = status.seven_day_outlook?.days;
+  if (!days?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+        Seven-day outlook from bulletin {status.seven_day_outlook?.issue_date}
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+        {days.map((day) => (
+          <div
+            key={day.forecast_date}
+            className="rounded-xl border border-slate-200 px-3 py-2"
+          >
+            <p className="text-xs text-slate-500">{day.forecast_date}</p>
+            <p className="text-sm font-semibold text-slate-900">{day.final_risk}</p>
+            <p className="text-[11px] uppercase tracking-wide text-slate-400">
+              {day.expired ? "Expired" : day.forecast_status ?? "Forecast"}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function DashboardShell() {
   const { data, isLoading, isRefreshing, refresh } = useFloodShieldData();
@@ -30,6 +58,7 @@ export function DashboardShell() {
       <Header
         lastUpdated={status?.date ?? data.lastFetchedAt}
         mode={data.mode}
+        bulletinStatus={status?.forecast_status}
         isRefreshing={isRefreshing}
         onRefresh={refresh}
       />
@@ -75,6 +104,7 @@ export function DashboardShell() {
             <div className="animate-fade-in space-y-6">
               <FloodAlertHero status={status} />
               <MetricCards status={status} />
+              <SevenDayOutlook status={status} />
             </div>
           ) : null}
         </section>

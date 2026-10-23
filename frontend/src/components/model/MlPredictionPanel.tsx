@@ -14,7 +14,10 @@ interface MlPredictionPanelProps {
 
 export function MlPredictionPanel({ status }: MlPredictionPanelProps) {
   const risk = getRiskStyle(status.ml_next_day_risk);
-  const confidence = Math.max(0, Math.min(100, status.ml_confidence));
+  const confidence =
+    status.ml_confidence == null
+      ? 0
+      : Math.max(0, Math.min(100, status.ml_confidence));
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (confidence / 100) * circumference;
@@ -97,7 +100,7 @@ export function MlPredictionPanel({ status }: MlPredictionPanelProps) {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <MetaItem icon={<Radio className="h-4 w-4" />} label="Model status" value="Online" />
-          <MetaItem icon={<CircleDot className="h-4 w-4" />} label="Prediction horizon" value="Next day" />
+          <MetaItem icon={<CircleDot className="h-4 w-4" />} label="Prediction horizon" value="7-day outlook (day +1…+7)" />
           <MetaItem icon={<MapPin className="h-4 w-4" />} label="Monitoring station" value="Marala" />
           <MetaItem icon={<Waves className="h-4 w-4" />} label="River" value="Chenab" />
         </div>

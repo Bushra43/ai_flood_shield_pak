@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FloodShield Marala — model evaluation</title>
+  <style>
+    :root {
+      --ink: #1c1915;
+      --muted: #5c564c;
+      --line: #d9d3c7;
+      --paper: #f7f4ee;
+      --card: #fffdf8;
+      --accent: #1f4d45;
+      --warn: #8a4b12;
+      --warn-bg: #f8efe4;
+      --hit: #e7f0ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 15px/1.5 "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 40px 28px 64px;
+    }
+    header.banner {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+    }
+    .kicker {
+      margin: 0 0 6px;
+      font: 12px/1.3 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .lede {
+      margin: 0;
+      max-width: 68ch;
+      color: var(--muted);
+    }
+    h2 {
+      margin: 36px 0 8px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+    h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    p { margin: 0 0 10px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 22px 0 8px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 14px 16px 12px;
+    }
+    .stat b {
+      display: block;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .stat span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font: 12px/1.35 ui-sans-serif, system-ui, sans-serif;
+    }
+    .note {
+      background: var(--warn-bg);
+      border-left: 3px solid var(--warn);
+      padding: 12px 14px;
+      margin: 18px 0 0;
+    }
+    .note strong { color: var(--warn); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 7px 8px;
+      text-align: right;
+      vertical-align: top;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th {
+      font: 11px/1.3 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    caption {
+      caption-side: bottom;
+      text-align: left;
+      color: var(--muted);
+      font: 12px/1.4 ui-sans-serif, system-ui, sans-serif;
+      padding-top: 6px;
+    }
+    .matrices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 22px;
+      margin-top: 14px;
+    }
+    .matrix {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 12px 12px 8px;
+      break-inside: avoid;
+    }
+    .matrix p {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font: 12px/1.35 ui-sans-serif, system-ui, sans-serif;
+    }
+    .matrix table { margin: 0; font-size: 13px; }
+    .matrix th, .matrix td { padding: 4px 6px; }
+    .hit { background: var(--hit); font-weight: 600; }
+    .zero { color: #a39c91; }
+    .src {
+      margin-top: 36px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 12px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+    @media (max-width: 720px) {
+      .stats, .matrices { grid-template-columns: 1fr; }
+      h1 { font-size: 26px; }
+    }
+    @page { size: A4; margin: 14mm 12mm; }
+    @media print {
+      body { background: white; }
+      main { max-width: none; padding: 0; }
+      .stat, .matrix { background: white; }
+      .note { background: white; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header class="banner">
+    <p class="kicker">AI FloodShield PAK · Chenab at Marala</p>
+    <h1>Model accuracy, class F1, and confusion matrices</h1>
+    <p class="lede">Holdout scores for the seven selected horizon models. Training days are monsoon seasons 2024–2025. The test set is monsoon 2026. Accuracy was not the rule used to pick a model.</p>
+  </header>
+
+  <section class="stats" aria-label="Summary">
+    <div class="stat">
+      <b>98.60%</b>
+      <span>Pooled accuracy, 635 of 644 test days</span>
+    </div>
+    <div class="stat">
+      <b>49.64%</b>
+      <span>Mean macro-F1, Day +1 through Day +6</span>
+    </div>
+    <div class="stat">
+      <b>0.000</b>
+      <span>Low-class F1 on every day that has a Low example</span>
+    </div>
+  </section>
+
+  <div class="note">
+    <strong>How to read the high accuracy.</strong>
+    The 2026 labels are almost all Normal. Days +1 to +6 each contain one Low day and no Medium, High, Very High, or Exceptional day. Every selected model missed that Low day, so flood-class F1 is zero even while overall accuracy stays near 99%. Day +7 has no minority class in the test set, so its 99.42% macro-F1 is Normal only. Very High has no historical examples. Exceptional has one, which is below the two-example minimum, so neither class was trained and neither has an F1.
+  </div>
+
+  <h2>Selected model by horizon</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Horizon</th>
+        <th>Model</th>
+        <th>Test rows</th>
+        <th>Correct</th>
+        <th>Accuracy</th>
+        <th>Macro-F1</th>
+        <th>Classes in macro-F1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Day +1</td><td>Random Forest, unweighted</td><td>97</td><td>95</td><td>97.94%</td><td>0.495</td><td>Normal, Low</td></tr>
+      <tr><td>Day +2</td><td>Majority baseline</td><td>95</td><td>94</td><td>98.95%</td><td>0.497</td><td>Normal, Low</td></tr>
+      <tr><td>Day +3</td><td>Random Forest, balanced</td><td>94</td><td>92</td><td>97.87%</td><td>0.495</td><td>Normal, Low</td></tr>
+      <tr><td>Day +4</td><td>Random Forest, unweighted</td><td>93</td><td>92</td><td>98.92%</td><td>0.497</td><td>Normal, Low</td></tr>
+      <tr><td>Day +5</td><td>Random Forest, unweighted</td><td>90</td><td>89</td><td>98.89%</td><td>0.497</td><td>Normal, Low</td></tr>
+      <tr><td>Day +6</td><td>Majority baseline</td><td>88</td><td>87</td><td>98.86%</td><td>0.497</td><td>Normal, Low</td></tr>
+      <tr><td>Day +7</td><td>Random Forest, balanced</td><td>87</td><td>86</td><td>98.85%</td><td>0.994</td><td>Normal only</td></tr>
+    </tbody>
+    <caption>Pooled accuracy is 635 correct predictions divided by 644 test rows. Macro-F1 averages F1 only over classes present in that horizon’s 2026 test set.</caption>
+  </table>
+
+  <h2>F1 score for each class</h2>
+  <p>F1 is the harmonic mean of precision and recall. A dash means the class has no score: it is missing from the 2026 test set, or it was unsupported in training.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Horizon</th>
+        <th>Normal</th>
+        <th>Low</th>
+        <th>Medium</th>
+        <th>High</th>
+        <th>Very High</th>
+        <th>Exceptional</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Day +1</td><td>0.990</td><td>0.000</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Day +2</td><td>0.995</td><td>0.000</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Day +3</td><td>0.989</td><td>0.000</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Day +4</td><td>0.995</td><td>0.000</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Day +5</td><td>0.994</td><td>0.000</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Day +6</td><td>0.994</td><td>0.000</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Day +7</td><td>0.994</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+    <caption>Exact scored values: Day +1 Normal 0.9896; Day +2 Normal 0.9947; Day +3 Normal 0.9892; Day +4 Normal 0.9946; Day +5 Normal 0.9944; Day +6 Normal 0.9943; Day +7 Normal 0.9942. Low F1 is exactly 0 wherever a Low day exists. Day +7 predicted Low once, but there was no true Low day, so Low F1 is not defined.</caption>
+  </table>
+
+  <h2>Confusion matrices</h2>
+  <p>Rows are the true 2026 label. Columns are the prediction. A shaded diagonal cell is a correct call. Class order is Normal, Low, Medium, High, Very High, Exceptional. Every Medium, High, Very High, and Exceptional cell is zero.</p>
+
+  <div class="matrices">
+    <article class="matrix">
+      <h3>Day +1 · Random Forest, unweighted</h3>
+      <p>95 correct of 97 · accuracy 97.94%</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">95</td><td>1</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td>1</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="matrix">
+      <h3>Day +2 · Majority baseline</h3>
+      <p>94 correct of 95 · accuracy 98.95%</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">94</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td>1</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="matrix">
+      <h3>Day +3 · Random Forest, balanced</h3>
+      <p>92 correct of 94 · accuracy 97.87%</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">92</td><td>1</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td>1</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="matrix">
+      <h3>Day +4 · Random Forest, unweighted</h3>
+      <p>92 correct of 93 · accuracy 98.92%</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">92</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td>1</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="matrix">
+      <h3>Day +5 · Random Forest, unweighted</h3>
+      <p>89 correct of 90 · accuracy 98.89%</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">89</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td>1</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="matrix">
+      <h3>Day +6 · Majority baseline</h3>
+      <p>87 correct of 88 · accuracy 98.86%</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">87</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td>1</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="matrix">
+      <h3>Day +7 · Random Forest, balanced</h3>
+      <p>86 correct of 87 · accuracy 98.85%. No true Low day; one Normal day was called Low.</p>
+      <table>
+        <thead><tr><th>True \ Pred</th><th>Normal</th><th>Low</th><th>Med</th><th>High</th><th>V.High</th><th>Exc.</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td class="hit">86</td><td>1</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Low</td><td class="zero">0</td><td class="hit">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Medium</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Very High</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td><td class="zero">0</td></tr>
+          <tr><td>Exceptional</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="hit zero">0</td></tr>
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+  <h2>Test-set support</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Horizon</th>
+        <th>Normal</th>
+        <th>Low</th>
+        <th>Medium</th>
+        <th>High</th>
+        <th>Very High</th>
+        <th>Exceptional</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Day +1</td><td>96</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>Day +2</td><td>94</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>Day +3</td><td>93</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>Day +4</td><td>92</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>Day +5</td><td>89</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>Day +6</td><td>87</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>Day +7</td><td>87</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    </tbody>
+    <caption>Counts of true labels in the 2026 test window. Full historical inflow labels: Normal 316, Low 14, Medium 3, High 2, Very High 0, Exceptional 1.</caption>
+  </table>
+
+  <p class="src">Source: models/metrics/horizon_metrics.json, version floodshield-marala-7day-2. Report dated 22 October 2026. Figures are the saved 2026 evaluation of the selected model for each horizon.</p>
+</main>
+</body>
+</html>

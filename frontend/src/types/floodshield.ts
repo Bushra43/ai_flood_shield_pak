@@ -9,23 +9,45 @@ export type RiskLevel =
   | "Extreme"
   | string;
 
+export interface SevenDayOutlookDay {
+  forecast_date: string;
+  horizon_days: number;
+  final_risk: string;
+  stale?: boolean;
+  expired?: boolean;
+  forecast_status?: string;
+}
+
 export interface FloodStatus {
   date: string;
   river: string;
   station: string;
   current_inflow: number;
   current_outflow: number;
-  ffd_forecast_min: number;
-  ffd_forecast_max: number;
+  ffd_forecast_min: number | null;
+  ffd_forecast_max: number | null;
   ffd_forecast_text: string;
   current_danger: RiskLevel;
   ffd_forecast_risk: RiskLevel;
   ml_next_day_risk: RiskLevel;
-  ml_confidence: number;
+  ml_confidence: number | null;
   final_alert: RiskLevel;
   english_alert: string;
   urdu_alert: string;
   alert_generated_by: string;
+  qwen_status?: string | null;
+  alert_source?: string | null;
+  forecast_status?: string | null;
+  data_freshness?: {
+    stale?: boolean;
+    note?: string;
+    bulletin_date?: string;
+    as_of_local_date?: string;
+  } | null;
+  seven_day_outlook?: {
+    issue_date: string;
+    days: SevenDayOutlookDay[];
+  } | null;
 }
 
 export interface HistoryPoint {

@@ -1,0 +1,3900 @@
+{
+  "version": "floodshield-marala-7day-2",
+  "inflow_class_counts": {
+    "Normal": 316,
+    "Low": 14,
+    "Medium": 3,
+    "High": 2,
+    "Very High": 0,
+    "Exceptional": 1
+  },
+  "limitations": [
+    "Historical inflow labels are mostly Normal. Very High has no examples in this dataset, so it cannot be learned and no score is reported for it.",
+    "A class with fewer than two training examples is unsupported. The single Exceptional day is not treated as a learned class.",
+    "Accuracy is high because almost every day is Normal. Model selection uses macro-F1 and minority-class recall. Accuracy is reported and is not the selection rule.",
+    "The 2026 test window contains almost no minority-class days, so a reliable seven-day estimate of flood recall is not possible from this split.",
+    "The record is monsoon-only (June-October). The gap between seasons is about 243 days. Lags use the calendar, so that gap is missing history rather than a one-day lag.",
+    "Jammu weather is not in the historical CSV, so it is not a supervised feature and is not used at training time.",
+    "Training reads the first number of a forecast range. Public alerts use the upper end of that range. Both behaviors are intentional.",
+    "FFD does not publish seven daily Marala discharge forecasts. These models are category classifiers, not a substitute for an official seven-day hydrograph."
+  ],
+  "horizons": {
+    "1": {
+      "model_available": true,
+      "model_name": "Random Forest (unweighted)",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium"
+      ],
+      "unsupported_classes": [
+        "High",
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 321,
+        "train_rows": 224,
+        "test_rows": 97,
+        "train": {
+          "Normal": 207,
+          "Low": 12,
+          "Medium": 3,
+          "High": 1,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 96,
+          "Low": 1,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.979381443298969,
+        "balanced_accuracy": 0.4947916666666667,
+        "macro_f1": 0.4947916666666667,
+        "minority_recall": 0.0,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": false,
+          "cv_macro_f1": 0.6496158000687386,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9189189189189187,
+          "test_accuracy": 0.9896907216494846,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49740932642487046,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9896907216494846,
+              "recall": 1.0,
+              "f1": 0.9948186528497409,
+              "support": 96,
+              "predicted": 97,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              96,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": true,
+          "cv_macro_f1": 0.6995364349893736,
+          "cv_minority_recall": 0.16666666666666666,
+          "cv_accuracy": 0.9189189189189187,
+          "test_accuracy": 0.979381443298969,
+          "test_balanced_accuracy": 0.4947916666666667,
+          "test_macro_f1": 0.4947916666666667,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9895833333333334,
+              "recall": 0.9895833333333334,
+              "f1": 0.9895833333333334,
+              "support": 96,
+              "predicted": 96,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 1,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              95,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6652750150321338,
+          "cv_minority_recall": 0.16666666666666666,
+          "cv_accuracy": 0.8756756756756758,
+          "test_accuracy": 0.9896907216494846,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49740932642487046,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9896907216494846,
+              "recall": 1.0,
+              "f1": 0.9948186528497409,
+              "support": 96,
+              "predicted": 97,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              96,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6798445582386733,
+          "cv_minority_recall": 0.16666666666666666,
+          "cv_accuracy": 0.908108108108108,
+          "test_accuracy": 0.9896907216494846,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49740932642487046,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9896907216494846,
+              "recall": 1.0,
+              "f1": 0.9948186528497409,
+              "support": 96,
+              "predicted": 97,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              96,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    },
+    "2": {
+      "model_available": true,
+      "model_name": "Majority baseline",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium"
+      ],
+      "unsupported_classes": [
+        "High",
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 315,
+        "train_rows": 220,
+        "test_rows": 95,
+        "train": {
+          "Normal": 204,
+          "Low": 12,
+          "Medium": 3,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 94,
+          "Low": 1,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.9894736842105263,
+        "balanced_accuracy": 0.5,
+        "macro_f1": 0.4973544973544973,
+        "minority_recall": 0.0,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": true,
+          "cv_macro_f1": 0.6491604997214928,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9166666666666666,
+          "test_accuracy": 0.9894736842105263,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4973544973544973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9894736842105263,
+              "recall": 1.0,
+              "f1": 0.9947089947089947,
+              "support": 94,
+              "predicted": 95,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              94,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": false,
+          "cv_macro_f1": 0.6477118075685753,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9111111111111111,
+          "test_accuracy": 0.9894736842105263,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4973544973544973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9894736842105263,
+              "recall": 1.0,
+              "f1": 0.9947089947089947,
+              "support": 94,
+              "predicted": 95,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              94,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6389723117702559,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.888888888888889,
+          "test_accuracy": 0.9894736842105263,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4973544973544973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9894736842105263,
+              "recall": 1.0,
+              "f1": 0.9947089947089947,
+              "support": 94,
+              "predicted": 95,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              94,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6477118075685753,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9111111111111111,
+          "test_accuracy": 0.9894736842105263,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4973544973544973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9894736842105263,
+              "recall": 1.0,
+              "f1": 0.9947089947089947,
+              "support": 94,
+              "predicted": 95,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              94,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    },
+    "3": {
+      "model_available": true,
+      "model_name": "Random Forest (balanced)",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium"
+      ],
+      "unsupported_classes": [
+        "High",
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 311,
+        "train_rows": 217,
+        "test_rows": 94,
+        "train": {
+          "Normal": 202,
+          "Low": 11,
+          "Medium": 2,
+          "High": 1,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 93,
+          "Low": 1,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.9787234042553191,
+        "balanced_accuracy": 0.4946236559139785,
+        "macro_f1": 0.4946236559139785,
+        "minority_recall": 0.0,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": false,
+          "cv_macro_f1": 0.6513387374109556,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9257142857142858,
+          "test_accuracy": 0.9893617021276596,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49732620320855614,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9893617021276596,
+              "recall": 1.0,
+              "f1": 0.9946524064171123,
+              "support": 93,
+              "predicted": 94,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              93,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": false,
+          "cv_macro_f1": 0.6513387374109556,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9257142857142858,
+          "test_accuracy": 0.9893617021276596,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49732620320855614,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9893617021276596,
+              "recall": 1.0,
+              "f1": 0.9946524064171123,
+              "support": 93,
+              "predicted": 94,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              93,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": true,
+          "cv_macro_f1": 0.6668700397091224,
+          "cv_minority_recall": 0.3703703703703704,
+          "cv_accuracy": 0.8571428571428571,
+          "test_accuracy": 0.9787234042553191,
+          "test_balanced_accuracy": 0.4946236559139785,
+          "test_macro_f1": 0.4946236559139785,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.989247311827957,
+              "recall": 0.989247311827957,
+              "f1": 0.989247311827957,
+              "support": 93,
+              "predicted": 93,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 1,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              92,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6513387374109556,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9257142857142858,
+          "test_accuracy": 0.9893617021276596,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49732620320855614,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9893617021276596,
+              "recall": 1.0,
+              "f1": 0.9946524064171123,
+              "support": 93,
+              "predicted": 94,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              93,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    },
+    "4": {
+      "model_available": true,
+      "model_name": "Random Forest (unweighted)",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "unsupported_classes": [
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 310,
+        "train_rows": 217,
+        "test_rows": 93,
+        "train": {
+          "Normal": 200,
+          "Low": 12,
+          "Medium": 2,
+          "High": 2,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 92,
+          "Low": 1,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.989247311827957,
+        "balanced_accuracy": 0.5,
+        "macro_f1": 0.4972972972972973,
+        "minority_recall": 0.0,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall_tie_break_pre_specified_order"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": false,
+          "cv_macro_f1": 0.635114133074308,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9111111111111111,
+          "test_accuracy": 0.989247311827957,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4972972972972973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.989247311827957,
+              "recall": 1.0,
+              "f1": 0.9945945945945946,
+              "support": 92,
+              "predicted": 93,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              92,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": true,
+          "cv_macro_f1": 0.635114133074308,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9111111111111111,
+          "test_accuracy": 0.989247311827957,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4972972972972973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.989247311827957,
+              "recall": 1.0,
+              "f1": 0.9945945945945946,
+              "support": 92,
+              "predicted": 93,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              92,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6250139215233542,
+          "cv_minority_recall": 0.011111111111111112,
+          "cv_accuracy": 0.8444444444444444,
+          "test_accuracy": 0.967741935483871,
+          "test_balanced_accuracy": 0.4891304347826087,
+          "test_macro_f1": 0.4918032786885246,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.989010989010989,
+              "recall": 0.9782608695652174,
+              "f1": 0.9836065573770492,
+              "support": 92,
+              "predicted": 91,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 2,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              90,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.6304619777179272,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.888888888888889,
+          "test_accuracy": 0.989247311827957,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4972972972972973,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.989247311827957,
+              "recall": 1.0,
+              "f1": 0.9945945945945946,
+              "support": 92,
+              "predicted": 93,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              92,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    },
+    "5": {
+      "model_available": true,
+      "model_name": "Random Forest (unweighted)",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "unsupported_classes": [
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 305,
+        "train_rows": 215,
+        "test_rows": 90,
+        "train": {
+          "Normal": 197,
+          "Low": 13,
+          "Medium": 2,
+          "High": 2,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 89,
+          "Low": 1,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.9888888888888889,
+        "balanced_accuracy": 0.5,
+        "macro_f1": 0.4972067039106145,
+        "minority_recall": 0.0,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": false,
+          "cv_macro_f1": 0.5331521739130435,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9028571428571428,
+          "test_accuracy": 0.9888888888888889,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4972067039106145,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9888888888888889,
+              "recall": 1.0,
+              "f1": 0.994413407821229,
+              "support": 89,
+              "predicted": 90,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              89,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": true,
+          "cv_macro_f1": 0.5616847826086956,
+          "cv_minority_recall": 0.25,
+          "cv_accuracy": 0.8857142857142858,
+          "test_accuracy": 0.9888888888888889,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4972067039106145,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9888888888888889,
+              "recall": 1.0,
+              "f1": 0.994413407821229,
+              "support": 89,
+              "predicted": 90,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              89,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.5153032036613272,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8400000000000001,
+          "test_accuracy": 0.9555555555555556,
+          "test_balanced_accuracy": 0.48314606741573035,
+          "test_macro_f1": 0.48863636363636365,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9885057471264368,
+              "recall": 0.9662921348314607,
+              "f1": 0.9772727272727273,
+              "support": 89,
+              "predicted": 87,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 3,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              86,
+              3,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.5283514492753623,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8800000000000001,
+          "test_accuracy": 0.9888888888888889,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.4972067039106145,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9888888888888889,
+              "recall": 1.0,
+              "f1": 0.994413407821229,
+              "support": 89,
+              "predicted": 90,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              89,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    },
+    "6": {
+      "model_available": true,
+      "model_name": "Majority baseline",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "unsupported_classes": [
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 301,
+        "train_rows": 213,
+        "test_rows": 88,
+        "train": {
+          "Normal": 194,
+          "Low": 13,
+          "Medium": 3,
+          "High": 2,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 87,
+          "Low": 1,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.9886363636363636,
+        "balanced_accuracy": 0.5,
+        "macro_f1": 0.49714285714285716,
+        "minority_recall": 0.0,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": true,
+          "cv_macro_f1": 0.5320158102766798,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8971428571428571,
+          "test_accuracy": 0.9886363636363636,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49714285714285716,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9886363636363636,
+              "recall": 1.0,
+              "f1": 0.9942857142857143,
+              "support": 87,
+              "predicted": 88,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              87,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": false,
+          "cv_macro_f1": 0.520561859832547,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8571428571428571,
+          "test_accuracy": 0.9886363636363636,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49714285714285716,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9886363636363636,
+              "recall": 1.0,
+              "f1": 0.9942857142857143,
+              "support": 87,
+              "predicted": 88,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              87,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.5086502708241839,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8171428571428571,
+          "test_accuracy": 0.9545454545454546,
+          "test_balanced_accuracy": 0.4827586206896552,
+          "test_macro_f1": 0.4883720930232558,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9882352941176471,
+              "recall": 0.9655172413793104,
+              "f1": 0.9767441860465116,
+              "support": 87,
+              "predicted": 85,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 2,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": 0.0,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 1,
+              "status": "absent_from_evaluation_but_predicted",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              84,
+              2,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.5243501265240396,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8628571428571428,
+          "test_accuracy": 0.9886363636363636,
+          "test_balanced_accuracy": 0.5,
+          "test_macro_f1": 0.49714285714285716,
+          "test_minority_recall": 0.0,
+          "test_minority_support": 1,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 0.9886363636363636,
+              "recall": 1.0,
+              "f1": 0.9942857142857143,
+              "support": 87,
+              "predicted": 88,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 1,
+              "predicted": 0,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              87,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    },
+    "7": {
+      "model_available": true,
+      "model_name": "Random Forest (balanced)",
+      "supported_classes": [
+        "Normal",
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "unsupported_classes": [
+        "Very High",
+        "Exceptional"
+      ],
+      "evaluation_reliable": false,
+      "class_support": {
+        "pairs": 297,
+        "train_rows": 210,
+        "test_rows": 87,
+        "train": {
+          "Normal": 193,
+          "Low": 11,
+          "Medium": 3,
+          "High": 2,
+          "Very High": 0,
+          "Exceptional": 1
+        },
+        "test": {
+          "Normal": 87,
+          "Low": 0,
+          "Medium": 0,
+          "High": 0,
+          "Very High": 0,
+          "Exceptional": 0
+        }
+      },
+      "metrics_2026": {
+        "accuracy": 0.9885057471264368,
+        "balanced_accuracy": 0.9885057471264368,
+        "macro_f1": 0.9942196531791907,
+        "minority_recall": null,
+        "evaluation_reliable": false,
+        "classes_absent_from_test": [
+          "Low",
+          "Medium",
+          "High",
+          "Very High",
+          "Exceptional"
+        ],
+        "selection_basis": "cv_macro_f1_then_minority_recall"
+      },
+      "comparison": [
+        {
+          "name": "Majority baseline",
+          "selected": false,
+          "cv_macro_f1": 0.5332703366285456,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.9058823529411765,
+          "test_accuracy": 1.0,
+          "test_balanced_accuracy": 1.0,
+          "test_macro_f1": 1.0,
+          "test_minority_recall": null,
+          "test_minority_support": 0,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Low",
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 87,
+              "predicted": 87,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              87,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (unweighted)",
+          "selected": false,
+          "cv_macro_f1": 0.5232874641059129,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8705882352941178,
+          "test_accuracy": 1.0,
+          "test_balanced_accuracy": 1.0,
+          "test_macro_f1": 1.0,
+          "test_minority_recall": null,
+          "test_minority_support": 0,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Low",
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 87,
+              "predicted": 87,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              87,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Random Forest (balanced)",
+          "selected": true,
+          "cv_macro_f1": 0.5668110341151386,
+          "cv_minority_recall": 0.125,
+          "cv_accuracy": 0.8470588235294118,
+          "test_accuracy": 0.9885057471264368,
+          "test_balanced_accuracy": 0.9885057471264368,
+          "test_macro_f1": 0.9942196531791907,
+          "test_minority_recall": null,
+          "test_minority_support": 0,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Low",
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 1.0,
+              "recall": 0.9885057471264368,
+              "f1": 0.9942196531791907,
+              "support": 87,
+              "predicted": 86,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": 0.0,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 1,
+              "status": "absent_from_evaluation_but_predicted",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              86,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Extra Trees (balanced)",
+          "selected": false,
+          "cv_macro_f1": 0.5228984671623175,
+          "cv_minority_recall": 0.0,
+          "cv_accuracy": 0.8647058823529413,
+          "test_accuracy": 1.0,
+          "test_balanced_accuracy": 1.0,
+          "test_macro_f1": 1.0,
+          "test_minority_recall": null,
+          "test_minority_support": 0,
+          "evaluation_reliable": false,
+          "classes_absent_from_evaluation": [
+            "Low",
+            "Medium",
+            "High",
+            "Very High",
+            "Exceptional"
+          ],
+          "per_class": {
+            "Normal": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 87,
+              "predicted": 87,
+              "status": "scored",
+              "training_status": "supported"
+            },
+            "Low": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Medium": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "absent_from_evaluation",
+              "training_status": "supported"
+            },
+            "Very High": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            },
+            "Exceptional": {
+              "precision": null,
+              "recall": null,
+              "f1": null,
+              "support": 0,
+              "predicted": 0,
+              "status": "unsupported_not_scored",
+              "training_status": "unsupported"
+            }
+          },
+          "confusion_matrix": [
+            [
+              87,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "unavailable_reason": null
+    }
+  },
+  "evaluation_conclusion": "Reliable seven-day evaluation of minority flood classes is not possible on this dataset. The 2026 test labels are almost entirely Normal, and Very High has zero examples. High accuracy is the majority-class rate, not flood skill."
+}

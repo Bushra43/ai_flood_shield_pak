@@ -8,8 +8,16 @@ interface CurrentVsForecastProps {
 }
 
 export function CurrentVsForecast({ status }: CurrentVsForecastProps) {
-  const mid = (status.ffd_forecast_min + status.ffd_forecast_max) / 2;
-  const increase = percentIncrease(status.current_inflow, mid);
+  const forecastMin = status.ffd_forecast_min;
+  const forecastMax = status.ffd_forecast_max;
+  const hasBand =
+    typeof forecastMin === "number" && typeof forecastMax === "number";
+  const mid = hasBand
+    ? (forecastMin + forecastMax) / 2
+    : status.current_inflow;
+  const increase = hasBand
+    ? percentIncrease(status.current_inflow, mid)
+    : 0;
 
   return (
     <Card className="overflow-hidden p-6 sm:p-8">
@@ -24,7 +32,9 @@ export function CurrentVsForecast({ status }: CurrentVsForecastProps) {
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-sm font-semibold text-teal-800">
           <TrendingUp className="h-4 w-4" />
-          +{increase.toFixed(0)}% vs current
+          {hasBand && status.forecast_status !== "expired"
+            ? `+${increase.toFixed(0)}% vs current`
+            : "Not a current forecast"}
         </div>
       </div>
 

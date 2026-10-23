@@ -1,0 +1,352 @@
+FloodShield Marala horizon metrics
+Version: floodshield-marala-7day-2
+
+Inflow-derived class counts:
+  Normal: 316
+  Low: 14
+  Medium: 3
+  High: 2
+  Very High: 0
+  Exceptional: 1
+
+Limitations:
+  - Historical inflow labels are mostly Normal. Very High has no examples in this dataset, so it cannot be learned and no score is reported for it.
+  - A class with fewer than two training examples is unsupported. The single Exceptional day is not treated as a learned class.
+  - Accuracy is high because almost every day is Normal. Model selection uses macro-F1 and minority-class recall. Accuracy is reported and is not the selection rule.
+  - The 2026 test window contains almost no minority-class days, so a reliable seven-day estimate of flood recall is not possible from this split.
+  - The record is monsoon-only (June-October). The gap between seasons is about 243 days. Lags use the calendar, so that gap is missing history rather than a one-day lag.
+  - Jammu weather is not in the historical CSV, so it is not a supervised feature and is not used at training time.
+  - Training reads the first number of a forecast range. Public alerts use the upper end of that range. Both behaviors are intentional.
+  - FFD does not publish seven daily Marala discharge forecasts. These models are category classifiers, not a substitute for an official seven-day hydrograph.
+
+Day +1
+  available: True
+  model: Random Forest (unweighted)
+  supported: ['Normal', 'Low', 'Medium']
+  unsupported: ['High', 'Very High', 'Exceptional']
+  support: {'pairs': 321, 'train_rows': 224, 'test_rows': 97, 'train': {'Normal': 207, 'Low': 12, 'Medium': 3, 'High': 1, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 96, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9794 / 0.4948 / 0.4948 / 0.0000
+  classes absent from 2026 test: ['Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline
+      CV macro-F1 / minority recall / accuracy: 0.6496 / 0.0000 / 0.9189
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9897
+        Normal: recall=1.00 f1=0.99 support=96
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted) [selected]
+      CV macro-F1 / minority recall / accuracy: 0.6995 / 0.1667 / 0.9189
+      2026 macro-F1 / minority recall / accuracy: 0.4948 / 0.0000 / 0.9794
+        Normal: recall=0.99 f1=0.99 support=96
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6653 / 0.1667 / 0.8757
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9897
+        Normal: recall=1.00 f1=0.99 support=96
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6798 / 0.1667 / 0.9081
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9897
+        Normal: recall=1.00 f1=0.99 support=96
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Day +2
+  available: True
+  model: Majority baseline
+  supported: ['Normal', 'Low', 'Medium']
+  unsupported: ['High', 'Very High', 'Exceptional']
+  support: {'pairs': 315, 'train_rows': 220, 'test_rows': 95, 'train': {'Normal': 204, 'Low': 12, 'Medium': 3, 'High': 0, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 94, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9895 / 0.5000 / 0.4974 / 0.0000
+  classes absent from 2026 test: ['Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline [selected]
+      CV macro-F1 / minority recall / accuracy: 0.6492 / 0.0000 / 0.9167
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9895
+        Normal: recall=1.00 f1=0.99 support=94
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted)
+      CV macro-F1 / minority recall / accuracy: 0.6477 / 0.0000 / 0.9111
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9895
+        Normal: recall=1.00 f1=0.99 support=94
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6390 / 0.0000 / 0.8889
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9895
+        Normal: recall=1.00 f1=0.99 support=94
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6477 / 0.0000 / 0.9111
+      2026 macro-F1 / minority recall / accuracy: 0.4974 / 0.0000 / 0.9895
+        Normal: recall=1.00 f1=0.99 support=94
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Day +3
+  available: True
+  model: Random Forest (balanced)
+  supported: ['Normal', 'Low', 'Medium']
+  unsupported: ['High', 'Very High', 'Exceptional']
+  support: {'pairs': 311, 'train_rows': 217, 'test_rows': 94, 'train': {'Normal': 202, 'Low': 11, 'Medium': 2, 'High': 1, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 93, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9787 / 0.4946 / 0.4946 / 0.0000
+  classes absent from 2026 test: ['Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline
+      CV macro-F1 / minority recall / accuracy: 0.6513 / 0.0000 / 0.9257
+      2026 macro-F1 / minority recall / accuracy: 0.4973 / 0.0000 / 0.9894
+        Normal: recall=1.00 f1=0.99 support=93
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted)
+      CV macro-F1 / minority recall / accuracy: 0.6513 / 0.0000 / 0.9257
+      2026 macro-F1 / minority recall / accuracy: 0.4973 / 0.0000 / 0.9894
+        Normal: recall=1.00 f1=0.99 support=93
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced) [selected]
+      CV macro-F1 / minority recall / accuracy: 0.6669 / 0.3704 / 0.8571
+      2026 macro-F1 / minority recall / accuracy: 0.4946 / 0.0000 / 0.9787
+        Normal: recall=0.99 f1=0.99 support=93
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6513 / 0.0000 / 0.9257
+      2026 macro-F1 / minority recall / accuracy: 0.4973 / 0.0000 / 0.9894
+        Normal: recall=1.00 f1=0.99 support=93
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: unsupported_not_scored support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Day +4
+  available: True
+  model: Random Forest (unweighted)
+  supported: ['Normal', 'Low', 'Medium', 'High']
+  unsupported: ['Very High', 'Exceptional']
+  support: {'pairs': 310, 'train_rows': 217, 'test_rows': 93, 'train': {'Normal': 200, 'Low': 12, 'Medium': 2, 'High': 2, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 92, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9892 / 0.5000 / 0.4973 / 0.0000
+  classes absent from 2026 test: ['Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline
+      CV macro-F1 / minority recall / accuracy: 0.6351 / 0.0000 / 0.9111
+      2026 macro-F1 / minority recall / accuracy: 0.4973 / 0.0000 / 0.9892
+        Normal: recall=1.00 f1=0.99 support=92
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted) [selected]
+      CV macro-F1 / minority recall / accuracy: 0.6351 / 0.0000 / 0.9111
+      2026 macro-F1 / minority recall / accuracy: 0.4973 / 0.0000 / 0.9892
+        Normal: recall=1.00 f1=0.99 support=92
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6250 / 0.0111 / 0.8444
+      2026 macro-F1 / minority recall / accuracy: 0.4918 / 0.0000 / 0.9677
+        Normal: recall=0.98 f1=0.98 support=92
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.6305 / 0.0000 / 0.8889
+      2026 macro-F1 / minority recall / accuracy: 0.4973 / 0.0000 / 0.9892
+        Normal: recall=1.00 f1=0.99 support=92
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Day +5
+  available: True
+  model: Random Forest (unweighted)
+  supported: ['Normal', 'Low', 'Medium', 'High']
+  unsupported: ['Very High', 'Exceptional']
+  support: {'pairs': 305, 'train_rows': 215, 'test_rows': 90, 'train': {'Normal': 197, 'Low': 13, 'Medium': 2, 'High': 2, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 89, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9889 / 0.5000 / 0.4972 / 0.0000
+  classes absent from 2026 test: ['Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline
+      CV macro-F1 / minority recall / accuracy: 0.5332 / 0.0000 / 0.9029
+      2026 macro-F1 / minority recall / accuracy: 0.4972 / 0.0000 / 0.9889
+        Normal: recall=1.00 f1=0.99 support=89
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted) [selected]
+      CV macro-F1 / minority recall / accuracy: 0.5617 / 0.2500 / 0.8857
+      2026 macro-F1 / minority recall / accuracy: 0.4972 / 0.0000 / 0.9889
+        Normal: recall=1.00 f1=0.99 support=89
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.5153 / 0.0000 / 0.8400
+      2026 macro-F1 / minority recall / accuracy: 0.4886 / 0.0000 / 0.9556
+        Normal: recall=0.97 f1=0.98 support=89
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.5284 / 0.0000 / 0.8800
+      2026 macro-F1 / minority recall / accuracy: 0.4972 / 0.0000 / 0.9889
+        Normal: recall=1.00 f1=0.99 support=89
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Day +6
+  available: True
+  model: Majority baseline
+  supported: ['Normal', 'Low', 'Medium', 'High']
+  unsupported: ['Very High', 'Exceptional']
+  support: {'pairs': 301, 'train_rows': 213, 'test_rows': 88, 'train': {'Normal': 194, 'Low': 13, 'Medium': 3, 'High': 2, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 87, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9886 / 0.5000 / 0.4971 / 0.0000
+  classes absent from 2026 test: ['Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline [selected]
+      CV macro-F1 / minority recall / accuracy: 0.5320 / 0.0000 / 0.8971
+      2026 macro-F1 / minority recall / accuracy: 0.4971 / 0.0000 / 0.9886
+        Normal: recall=1.00 f1=0.99 support=87
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted)
+      CV macro-F1 / minority recall / accuracy: 0.5206 / 0.0000 / 0.8571
+      2026 macro-F1 / minority recall / accuracy: 0.4971 / 0.0000 / 0.9886
+        Normal: recall=1.00 f1=0.99 support=87
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.5087 / 0.0000 / 0.8171
+      2026 macro-F1 / minority recall / accuracy: 0.4884 / 0.0000 / 0.9545
+        Normal: recall=0.97 f1=0.98 support=87
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation_but_predicted support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.5244 / 0.0000 / 0.8629
+      2026 macro-F1 / minority recall / accuracy: 0.4971 / 0.0000 / 0.9886
+        Normal: recall=1.00 f1=0.99 support=87
+        Low: recall=0.00 f1=0.00 support=1
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Day +7
+  available: True
+  model: Random Forest (balanced)
+  supported: ['Normal', 'Low', 'Medium', 'High']
+  unsupported: ['Very High', 'Exceptional']
+  support: {'pairs': 297, 'train_rows': 210, 'test_rows': 87, 'train': {'Normal': 193, 'Low': 11, 'Medium': 3, 'High': 2, 'Very High': 0, 'Exceptional': 1}, 'test': {'Normal': 87, 'Low': 0, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}}
+  2026 evaluation reliable: False
+  selected 2026 accuracy / balanced / macro-F1 / minority recall: 0.9885 / 0.9885 / 0.9942 / not estimable
+  classes absent from 2026 test: ['Low', 'Medium', 'High', 'Very High', 'Exceptional']
+  comparison (accuracy was not used to select):
+    Majority baseline
+      CV macro-F1 / minority recall / accuracy: 0.5333 / 0.0000 / 0.9059
+      2026 macro-F1 / minority recall / accuracy: 1.0000 / not estimable / 1.0000
+        Normal: recall=1.00 f1=1.00 support=87
+        Low: absent_from_evaluation support=0
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (unweighted)
+      CV macro-F1 / minority recall / accuracy: 0.5233 / 0.0000 / 0.8706
+      2026 macro-F1 / minority recall / accuracy: 1.0000 / not estimable / 1.0000
+        Normal: recall=1.00 f1=1.00 support=87
+        Low: absent_from_evaluation support=0
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Random Forest (balanced) [selected]
+      CV macro-F1 / minority recall / accuracy: 0.5668 / 0.1250 / 0.8471
+      2026 macro-F1 / minority recall / accuracy: 0.9942 / not estimable / 0.9885
+        Normal: recall=0.99 f1=0.99 support=87
+        Low: absent_from_evaluation_but_predicted support=0
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+    Extra Trees (balanced)
+      CV macro-F1 / minority recall / accuracy: 0.5229 / 0.0000 / 0.8647
+      2026 macro-F1 / minority recall / accuracy: 1.0000 / not estimable / 1.0000
+        Normal: recall=1.00 f1=1.00 support=87
+        Low: absent_from_evaluation support=0
+        Medium: absent_from_evaluation support=0
+        High: absent_from_evaluation support=0
+        Very High: unsupported_not_scored support=0
+        Exceptional: unsupported_not_scored support=0
+
+Conclusion:
+  Reliable seven-day evaluation of minority flood classes is not possible on this dataset. The 2026 test labels are almost entirely Normal, and Very High has zero examples. High accuracy is the majority-class rate, not flood skill.

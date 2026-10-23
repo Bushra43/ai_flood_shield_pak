@@ -233,6 +233,18 @@ def _shape_status_from_engine_result(result: dict[str, Any]) -> dict[str, Any]:
         forecast_min = _as_float(result["ffd_forecast_value"])
         forecast_max = forecast_min
 
+    # Prefer day+1 quantitative flow from the seven-day outlook when present.
+    outlook = result.get("seven_day_outlook") or {}
+    days = outlook.get("days") or []
+    day_one = days[0] if days else {}
+    flow = day_one.get("river_flow_forecast") or {}
+    if forecast_min is None:
+        forecast_min = _clean_nan(flow.get("low"))
+    if forecast_max is None:
+        forecast_max = _clean_nan(flow.get("high"))
+        if forecast_max is None:
+            forecast_max = forecast_min
+
     alert = result.get("alert") or {}
     english = alert.get("english") or result.get("english_alert") or ""
     urdu = alert.get("urdu") or result.get("urdu_alert") or ""
@@ -242,7 +254,7 @@ def _shape_status_from_engine_result(result: dict[str, Any]) -> dict[str, Any]:
         or "Template"
     )
 
-    return {
+    payload: dict[str, Any] = {
         "date": result["date"],
         "river": result.get("river", engine.RIVER),
         "station": result.get("station", engine.STATION),
@@ -269,7 +281,15 @@ def _shape_status_from_engine_result(result: dict[str, Any]) -> dict[str, Any]:
         "alert_generated_by": generated_by,
         "mode": result.get("mode", "local"),
         "ffd_source": result.get("ffd_source"),
+        "qwen_status": alert.get("qwen_status"),
+        "alert_source": alert.get("alert_source"),
+        "forecast_status": result.get("forecast_status"),
+        "data_freshness": result.get("data_freshness"),
+        "seven_day_outlook": outlook or None,
     }
+    if result.get("fallback_reason"):
+        payload["fallback_reason"] = result["fallback_reason"]
+    return payload
 
 
 def run_local_status() -> dict[str, Any]:
@@ -293,7 +313,27 @@ def run_local_status() -> dict[str, Any]:
         ml_prediction,
     )
 
-    result = {
+    issue_day = pd.Timestamp(latest["date"]).date()
+    day_one = issue_day + pd.Timedelta(days=1)
+    day_state = engine.forecast_day_status(
+        issue_day,
+        day_one,
+        engine.karachi_today(),
+    )
+    if day_state["expired"]:
+        final_risk = "Insufficient data"
+
+    try:
+        ml_horizons = engine.predict_flood_risk_horizons(
+            feature_df,
+            engine.MODEL_DIR,
+            latest["date"],
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Horizon models could not be scored (local): {exc}")
+        ml_horizons = []
+
+    result: dict[str, Any] = {
         "date": latest["date"].strftime("%Y-%m-%d"),
         "river": engine.RIVER,
         "station": engine.STATION,
@@ -311,11 +351,31 @@ def run_local_status() -> dict[str, Any]:
         "ml_confidence": ml_confidence,
         "ml_probabilities": class_probabilities,
         "final_risk": final_risk,
+        "forecast_status": day_state["status"],
         "ffd_source": latest.get("source_url", "local CSV"),
         "mode": "local",
     }
 
     result["alert"] = engine.generate_qwen_alert(result)
+    result["seven_day_outlook"] = engine.build_seven_day_outlook(
+        issue_date=latest["date"],
+        current_risk=current_risk,
+        forecast_risk=forecast_risk,
+        forecast_text=latest["ffd_forecast_text"],
+        forecast_level=latest.get("ffd_forecast_level", ""),
+        forecast_low=latest.get("forecast_low"),
+        forecast_high=latest.get("forecast_high"),
+        ml_prediction=ml_prediction,
+        ml_probabilities=class_probabilities,
+        ml_horizons=ml_horizons,
+        jammu=None,
+        ffd_outlook=None,
+        final_risk=final_risk,
+        current_inflow=latest["inflow_current"],
+        current_outflow=latest["outflow_current"],
+        source_url=latest.get("source_url", "local CSV"),
+    )
+    result["data_freshness"] = result["seven_day_outlook"].get("data_freshness")
     return _shape_status_from_engine_result(result)
 
 
@@ -359,10 +419,13 @@ def get_model_info() -> dict[str, Any]:
         "river": "Chenab",
         "station": "Marala",
         "data_source": "FFD / PMD",
-        "ml_engine": "Extra Trees / Random Forest flood-risk classification",
+        "ml_engine": (
+            "7 calendar-horizon classifiers (day +1…+7); "
+            "Extra Trees / Random Forest flood-risk classification"
+        ),
         "generative_ai": "Qwen (phrasing only)",
         "live_data": "FFD Bulletin + local Marala CSV",
-        "output": "Bilingual Early Warning",
+        "output": "Bilingual Early Warning + seven-day outlook",
         "accuracy": None,
         "precision": None,
         "recall": None,
@@ -409,11 +472,19 @@ def get_model_info() -> dict[str, Any]:
 def get_health() -> dict[str, Any]:
     csv_ok = os.path.exists(engine.HISTORY_FILE)
     model_ok = os.path.exists(engine.MODEL_FILE)
+    horizon_dir = engine.MODEL_DIR / "horizons"
+    horizons_present = {
+        str(h): (horizon_dir / f"floodshield_horizon_{h}.pkl").exists()
+        for h in engine.HORIZONS
+    }
+    all_horizons = all(horizons_present.values())
     return {
-        "ok": csv_ok and model_ok,
+        "ok": csv_ok and model_ok and all_horizons,
         "mode": os.getenv("FLOODSHIELD_MODE", "local"),
         "csv_present": csv_ok,
         "model_present": model_ok,
+        "horizons_present": horizons_present,
         "history_file": engine.HISTORY_FILE,
         "model_file": engine.MODEL_FILE,
+        "model_dir": str(engine.MODEL_DIR),
     }

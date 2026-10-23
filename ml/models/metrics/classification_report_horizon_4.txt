@@ -1,0 +1,79 @@
+FloodShield day +4
+Selected: Random Forest (unweighted)
+Selection basis: cv_macro_f1_then_minority_recall_tie_break_pre_specified_order
+Accuracy is not the selection metric.
+Unsupported classes: ['Very High', 'Exceptional']
+Training support: {'Normal': 200, 'Low': 12, 'Medium': 2, 'High': 2, 'Very High': 0, 'Exceptional': 1}
+2026 support: {'Normal': 92, 'Low': 1, 'Medium': 0, 'High': 0, 'Very High': 0, 'Exceptional': 0}
+
+Majority baseline
+  accuracy           : 0.9892
+  balanced accuracy  : 0.5000
+  macro-F1           : 0.4973 on ['Normal', 'Low']
+  minority recall    : 0.0000
+  minority support   : 1
+  evaluation reliable: False
+  absent from this set: Medium, High, Very High, Exceptional
+  per class:
+    Normal       P=0.99 R=1.00 F1=0.99 support=92 predicted=93
+    Low          P=0.00 R=0.00 F1=0.00 support=1 predicted=0
+    Medium       absent_from_evaluation support=0 predicted=0 training=supported
+    High         absent_from_evaluation support=0 predicted=0 training=supported
+    Very High    unsupported_not_scored support=0 predicted=0 training=unsupported
+    Exceptional  unsupported_not_scored support=0 predicted=0 training=unsupported
+  confusion matrix labels: Normal, Low, Medium, High, Very High, Exceptional
+  confusion matrix: [[92, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+
+Random Forest (unweighted) [selected]
+  accuracy           : 0.9892
+  balanced accuracy  : 0.5000
+  macro-F1           : 0.4973 on ['Normal', 'Low']
+  minority recall    : 0.0000
+  minority support   : 1
+  evaluation reliable: False
+  absent from this set: Medium, High, Very High, Exceptional
+  per class:
+    Normal       P=0.99 R=1.00 F1=0.99 support=92 predicted=93
+    Low          P=0.00 R=0.00 F1=0.00 support=1 predicted=0
+    Medium       absent_from_evaluation support=0 predicted=0 training=supported
+    High         absent_from_evaluation support=0 predicted=0 training=supported
+    Very High    unsupported_not_scored support=0 predicted=0 training=unsupported
+    Exceptional  unsupported_not_scored support=0 predicted=0 training=unsupported
+  confusion matrix labels: Normal, Low, Medium, High, Very High, Exceptional
+  confusion matrix: [[92, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+
+Random Forest (balanced)
+  accuracy           : 0.9677
+  balanced accuracy  : 0.4891
+  macro-F1           : 0.4918 on ['Normal', 'Low']
+  minority recall    : 0.0000
+  minority support   : 1
+  evaluation reliable: False
+  absent from this set: Medium, High, Very High, Exceptional
+  per class:
+    Normal       P=0.99 R=0.98 F1=0.98 support=92 predicted=91
+    Low          P=0.00 R=0.00 F1=0.00 support=1 predicted=2
+    Medium       absent_from_evaluation support=0 predicted=0 training=supported
+    High         absent_from_evaluation support=0 predicted=0 training=supported
+    Very High    unsupported_not_scored support=0 predicted=0 training=unsupported
+    Exceptional  unsupported_not_scored support=0 predicted=0 training=unsupported
+  confusion matrix labels: Normal, Low, Medium, High, Very High, Exceptional
+  confusion matrix: [[90, 2, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+
+Extra Trees (balanced)
+  accuracy           : 0.9892
+  balanced accuracy  : 0.5000
+  macro-F1           : 0.4973 on ['Normal', 'Low']
+  minority recall    : 0.0000
+  minority support   : 1
+  evaluation reliable: False
+  absent from this set: Medium, High, Very High, Exceptional
+  per class:
+    Normal       P=0.99 R=1.00 F1=0.99 support=92 predicted=93
+    Low          P=0.00 R=0.00 F1=0.00 support=1 predicted=0
+    Medium       absent_from_evaluation support=0 predicted=0 training=supported
+    High         absent_from_evaluation support=0 predicted=0 training=supported
+    Very High    unsupported_not_scored support=0 predicted=0 training=unsupported
+    Exceptional  unsupported_not_scored support=0 predicted=0 training=unsupported
+  confusion matrix labels: Normal, Low, Medium, High, Very High, Exceptional
+  confusion matrix: [[92, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]

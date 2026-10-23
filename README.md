@@ -1,26 +1,30 @@
 # AI FloodShield PAK
 
-Early flood-risk alerting for the **Chenab River at Marala**. The system fuses live official observations, FFD forecasts, and a next-day ML model into a single risk level, then phrases bilingual (English / Urdu) community alerts.
+Early flood-risk alerting for the **Chenab River at Marala**. The system fuses live official observations, FFD forecasts, and **seven calendar-horizon ML classifiers** (day +1 … +7) into a risk outlook, then phrases bilingual (English / Urdu) community alerts.
 
 ## How it works
 
-FloodShield does not replace government warnings. It combines three signals and takes the highest credible risk:
+FloodShield does not replace government warnings. It combines signals and takes the highest credible risk:
 
 1. **Current danger** — official FFD thresholds applied to live inflow / outflow  
-2. **FFD 24h forecast** — published forecast risk  
-3. **ML next-day risk** — Random Forest model trained on Marala historical data  
+2. **FFD 24h forecast** — published quantitative forecast (day +1)  
+3. **ML horizon models** — separate classifiers for calendar day +1 … +7  
+4. **FFD weekly qualitative outlook** — fused into days +2 … +7 when the date falls in range  
+
+Top-level `ml_next_day_risk` remains the **day +1** class for compatibility. The API also returns `seven_day_outlook` with one card per horizon.
 
 An LLM (Qwen) is used **only to phrase** the already-decided risk level. It cannot change the alert class. If the LLM is unavailable, deterministic templates are used instead.
 
 ```text
-FFD bulletin / local CSV  →  risk fusion  →  English + Urdu alert  →  FastAPI  →  Next.js dashboard
+FFD bulletin / local CSV  →  risk fusion + 7-day outlook  →  English + Urdu alert  →  FastAPI / Gradio  →  Next.js dashboard
 ```
 
 | Path | Role |
 |------|------|
-| `backend/` | FastAPI API + decision engine |
-| `frontend/` | Next.js dashboard |
-| `ml/` | Training pipeline, processed data, trained model |
+| `backend/` | FastAPI API + decision engine (HF-ready) |
+| `frontend/` | Next.js dashboard (Gradio client for Hugging Face Space) |
+| `ml/` | Training pipeline, processed data, horizon models |
+| `app.py` | Hugging Face Spaces Gradio entrypoint |
 
 ## Run locally
 
@@ -35,7 +39,7 @@ cp .env.example .env               # optional: add DASHSCOPE_API_KEY for Qwen ph
 uvicorn main:app --reload --port 8000
 ```
 
-Default mode is `FLOODSHIELD_MODE=local` (CSV + trained model, works offline). Set `FLOODSHIELD_MODE=live` in `backend/.env` to scrape the latest FFD bulletin (falls back to local on failure).
+Default mode is `FLOODSHIELD_MODE=local` (CSV + trained models, works offline). Set `FLOODSHIELD_MODE=live` in `backend/.env` to scrape the latest FFD bulletin (falls back to local on failure).
 
 API: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -51,7 +55,24 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-If `NEXT_PUBLIC_API_BASE_URL` is empty, the dashboard uses built-in demo data.
+If `NEXT_PUBLIC_API_BASE_URL` is empty, the dashboard uses built-in demo data. Unset, it defaults to the deployed Hugging Face Space.
+
+### 3. Retrain (optional)
+
+```bash
+pip install -r ml/requirements.txt
+python ml/scripts/train_model.py
+```
+
+Writes `ml/models/horizons/floodshield_horizon_{1..7}.pkl` and copies horizon-1 to `ml/models/floodshield_marala_model.pkl`.
+
+## Hugging Face Space
+
+Root [`app.py`](app.py) exposes Gradio APIs the dashboard already calls:
+
+`/gradio_api/call/health`, `/status`, `/history`, `/model_info`
+
+Push this repo (without large raw dumps) to the Space. Ensure `ml/models/horizons/` and `ml/data/processed/` are included. Keep `scikit-learn==1.7.2` pinned in root `requirements.txt` so pickles load.
 
 ## Data sources
 
