@@ -1,6 +1,21 @@
+---
+title: FloodShield API
+emoji: 🌊
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 6.26.0
+app_file: app.py
+python_version: "3.12"
+pinned: false
+short_description: Chenab @ Marala flood-risk API for AI FloodShield PAK
+---
+
 # AI FloodShield PAK
 
 Early flood-risk alerting for the **Chenab River at Marala**. The system fuses live official observations, FFD forecasts, and **seven calendar-horizon ML classifiers** (day +1 … +7) into a risk outlook, then phrases bilingual (English / Urdu) community alerts.
+
+**Live API (Hugging Face Space):** [sardar19/floodshield-api](https://huggingface.co/spaces/sardar19/floodshield-api) — `https://sardar19-floodshield-api.hf.space`
 
 ## How it works
 
