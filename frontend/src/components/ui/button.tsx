@@ -21,8 +21,9 @@ export function Button({
         variant === "primary" &&
           "bg-teal-800 text-white shadow-sm hover:bg-teal-700",
         variant === "secondary" &&
-          "border border-slate-200 bg-white text-slate-800 shadow-sm hover:bg-slate-50",
-        variant === "ghost" && "text-slate-700 hover:bg-slate-100",
+          "border border-slate-200 bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
+        variant === "ghost" &&
+          "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800",
         className,
       )}
       {...props}

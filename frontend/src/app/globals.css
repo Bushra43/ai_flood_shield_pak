@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f5f8fb;
   --foreground: #0f172a;
@@ -8,6 +10,28 @@
   --border: #e2e8f0;
   --brand: #0f766e;
   --brand-dark: #134e4a;
+  --surface: #ffffff;
+  --page-gradient: radial-gradient(ellipse at top, #e8f1f4 0%, #f5f8fb 45%, #eef2f6 100%);
+  --header-bg: color-mix(in oklab, #f5f8fb 90%, transparent);
+  --chart-grid: #e2e8f0;
+  --chart-axis: #64748b;
+  --chart-axis-line: #cbd5e1;
+}
+
+.dark {
+  --background: #0b1220;
+  --foreground: #e2e8f0;
+  --card: #111827;
+  --muted: #94a3b8;
+  --border: #1f2937;
+  --brand: #2dd4bf;
+  --brand-dark: #5eead4;
+  --surface: #0f172a;
+  --page-gradient: radial-gradient(ellipse at top, #0f1c2e 0%, #0b1220 45%, #080d16 100%);
+  --header-bg: color-mix(in oklab, #0b1220 90%, transparent);
+  --chart-grid: #1e293b;
+  --chart-axis: #94a3b8;
+  --chart-axis-line: #334155;
 }
 
 @theme inline {
@@ -16,16 +40,6 @@
   --font-sans: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
   --font-urdu: var(--font-noto-urdu);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b1220;
-    --foreground: #e2e8f0;
-    --card: #111827;
-    --muted: #94a3b8;
-    --border: #1f2937;
-  }
 }
 
 * {
@@ -59,4 +73,8 @@ body {
 
 ::selection {
   background: color-mix(in oklab, #0f766e 25%, white);
+}
+
+.dark ::selection {
+  background: color-mix(in oklab, #2dd4bf 35%, transparent);
 }

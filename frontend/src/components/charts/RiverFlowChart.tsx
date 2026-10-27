@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatShortDate } from "@/lib/format";
+import { useTheme } from "@/lib/theme";
 import type { FloodStatus, HistoryPoint } from "@/types/floodshield";
 
 interface RiverFlowChartProps {
@@ -23,6 +24,15 @@ interface RiverFlowChartProps {
 }
 
 export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const grid = isDark ? "#1e293b" : "#e2e8f0";
+  const axis = isDark ? "#94a3b8" : "#64748b";
+  const axisLine = isDark ? "#334155" : "#cbd5e1";
+  const tooltipBg = isDark ? "#0f172a" : "#ffffff";
+  const tooltipBorder = isDark ? "#334155" : "#e2e8f0";
+  const forecastMinFill = isDark ? "#0f172a" : "#ffffff";
+
   const lastDate = history[history.length - 1]?.date ?? status.date;
   const forecastDate = addDays(lastDate, 1);
 
@@ -52,10 +62,10 @@ export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
       <CardHeader>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
               Chenab River Flow — Marala
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Observed inflow/outflow with FFD 24-hour forecast band
             </p>
           </div>
@@ -71,15 +81,15 @@ export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
               data={chartData}
               margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
             >
-              <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid stroke={grid} strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="label"
-                tick={{ fill: "#64748b", fontSize: 12 }}
-                axisLine={{ stroke: "#cbd5e1" }}
+                tick={{ fill: axis, fontSize: 12 }}
+                axisLine={{ stroke: axisLine }}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: "#64748b", fontSize: 12 }}
+                tick={{ fill: axis, fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 width={42}
@@ -88,13 +98,15 @@ export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
                   angle: -90,
                   position: "insideLeft",
                   offset: 10,
-                  style: { fill: "#94a3b8", fontSize: 11 },
+                  style: { fill: axis, fontSize: 11 },
                 }}
               />
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
-                  border: "1px solid #e2e8f0",
+                  border: `1px solid ${tooltipBorder}`,
+                  background: tooltipBg,
+                  color: isDark ? "#e2e8f0" : "#0f172a",
                   boxShadow: "0 8px 24px rgba(15,23,42,0.08)",
                 }}
                 formatter={(value, name) => {
@@ -139,7 +151,7 @@ export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
                 type="monotone"
                 dataKey="forecastMin"
                 stroke="none"
-                fill="#ffffff"
+                fill={forecastMinFill}
                 fillOpacity={1}
                 name="Forecast min"
                 connectNulls
@@ -193,7 +205,7 @@ export function RiverFlowChart({ history, status }: RiverFlowChartProps) {
             </ComposedChart>
           </ResponsiveContainer>
         </div>
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
           Shaded region shows the official FFD 24-hour forecast range (
           {status.ffd_forecast_text} thousand cusecs). Latest observation is
           highlighted on the inflow series.

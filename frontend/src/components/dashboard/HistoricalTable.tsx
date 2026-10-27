@@ -49,11 +49,11 @@ export function HistoricalTable({ history }: HistoricalTableProps) {
       <CardHeader>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
               Recent Marala Observations
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
-              Inflow, outflow and forecast context for Chenab at Marala
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Inflow, outflow and risk level for Chenab at Marala
             </p>
           </div>
           <Button
@@ -67,9 +67,9 @@ export function HistoricalTable({ history }: HistoricalTableProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto rounded-xl border border-slate-200">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
           <table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 dark:bg-slate-800 dark:text-slate-400">
               <tr>
                 <SortableHead
                   label="Date"
@@ -86,8 +86,7 @@ export function HistoricalTable({ history }: HistoricalTableProps) {
                   active={sortKey === "outflow"}
                   onClick={() => toggleSort("outflow")}
                 />
-                <th className="px-4 py-3 font-semibold">24h Forecast</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold">Risk Level</th>
               </tr>
             </thead>
             <tbody>
@@ -97,13 +96,13 @@ export function HistoricalTable({ history }: HistoricalTableProps) {
                   <tr
                     key={row.date}
                     className={cn(
-                      "border-t border-slate-100 transition-colors",
+                      "border-t border-slate-100 transition-colors dark:border-slate-800",
                       isLatest
-                        ? "bg-teal-50/70"
-                        : "bg-white hover:bg-slate-50/80",
+                        ? "bg-teal-50/70 dark:bg-teal-950/40"
+                        : "bg-white hover:bg-slate-50/80 dark:bg-slate-900 dark:hover:bg-slate-800/80",
                     )}
                   >
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
                       {formatDisplayDate(row.date)}
                       {isLatest ? (
                         <span className="ml-2 rounded-full bg-teal-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
@@ -111,25 +110,14 @@ export function HistoricalTable({ history }: HistoricalTableProps) {
                         </span>
                       ) : null}
                     </td>
-                    <td className="px-4 py-3 font-mono text-slate-700">
+                    <td className="px-4 py-3 font-mono text-slate-700 dark:text-slate-300">
                       {row.inflow.toFixed(1)}k
                     </td>
-                    <td className="px-4 py-3 font-mono text-slate-700">
+                    <td className="px-4 py-3 font-mono text-slate-700 dark:text-slate-300">
                       {row.outflow.toFixed(1)}k
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {row.forecast_text
-                        ? `${row.forecast_text}k`
-                        : row.forecast_min && row.forecast_max
-                          ? `${row.forecast_min}–${row.forecast_max}k`
-                          : "—"}
-                    </td>
                     <td className="px-4 py-3">
-                      {row.status ? (
-                        <StatusPill level={row.status} size="sm" />
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
+                      <StatusPill level="Normal" size="sm" />
                     </td>
                   </tr>
                 );
@@ -158,7 +146,9 @@ function SortableHead({
         onClick={onClick}
         className={cn(
           "inline-flex items-center gap-1 font-semibold uppercase tracking-wider",
-          active ? "text-teal-800" : "text-slate-500",
+          active
+            ? "text-teal-800 dark:text-teal-300"
+            : "text-slate-500 dark:text-slate-400",
         )}
       >
         {label}
